@@ -8,6 +8,7 @@ import 'package:location/location.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:async_loader/async_loader.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -18,6 +19,8 @@ class _HomeState extends State<Home> {
   Completer<GoogleMapController> _controller = Completer();
   Menu menu = Menu();
   Setting setting = new Setting();
+  final GlobalKey<AsyncLoaderState> _asyncLoaderState =
+      GlobalKey<AsyncLoaderState>();
 
 /*================= Get current location  ===============*/
   Location location = Location();
@@ -40,12 +43,16 @@ class _HomeState extends State<Home> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
   Dio dio = Dio();
+  var test;
   Future addmultimarker() async {
     var url = setting.apiUrl;
-    dio.options.connectTimeout = 380000; //5s
-    dio.options.receiveTimeout = 380000;
+    //dio.options.connectTimeout = 380000; //5s
+    //dio.options.receiveTimeout = 380000;
     try {
-      Response response = await dio.get("$url/api/getallprovince",options: buildCacheOptions(Duration(days: 7)),);
+      Response response = await dio.get(
+        "$url/api/getallprovince",
+        options: buildCacheOptions(Duration(days: 7)),
+      );
       if (response.statusCode == 200) {
         for (final provinces in response.data) {
           /*======== Marker =======*/
@@ -53,16 +60,31 @@ class _HomeState extends State<Home> {
           // creating a new MARKER
           final Marker marker = Marker(
             markerId: markerId,
-            position: LatLng(double.parse(provinces['latitute']), double.parse(provinces['longtitute'])),
-            //infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+            position: LatLng(double.parse(provinces['latitute']),
+                double.parse(provinces['longtitute'])),
             onTap: () {
-              showdetail(provinces["pro_name"]+'/'+provinces["pro_name_la"]);
+              /** zoom curent location on click */
+              mapController.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                      target: LatLng(double.parse(provinces['latitute']),
+                          double.parse(provinces['longtitute'])),
+                      zoom: 8.0),
+                ),
+              );
+
+              /** Show modal details  */
+              showdetail(
+                  provinces["pro_name"] + '/' + provinces["pro_name_la"],
+                  double.parse(provinces['latitute']),
+                  double.parse(provinces['longtitute']),
+                  int.parse(provinces['id']));
             },
           );
 
           /*================ Polyline ===============*/
           final PolylineId polygonId = PolylineId('$provinces["id"]');
-          final List<LatLng> polylinelist = [];
+          final List<LatLng> polylinelist = <LatLng>[];
           for (final polylinelatlong in provinces['polygons']) {
             polylinelist.add(LatLng(double.parse(polylinelatlong['latitude']),
                 double.parse(polylinelatlong['longitude'])));
@@ -75,7 +97,7 @@ class _HomeState extends State<Home> {
           setState(() {
             markers[markerId] = marker;
             polylines[polygonId] = polyline;
-            zoom = 5;
+            zoom = 10;
           });
         }
       } else {
@@ -86,8 +108,31 @@ class _HomeState extends State<Home> {
     }
   }
 
+  /*================= Get list district by provinces ===========*/
+  List listdistricts = [];
+  void getlistDistrictsByProvince(int province_id) async {
+    var url = setting.apiUrl;
+    try {
+      Response response = await dio.get(
+        "$url/api/getlistdistrict&province_id=$province_id",
+        options: buildCacheOptions(Duration(days: 7)),
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          listdistricts = response.data;
+        });
+      }
+    } on DioError catch (e) {
+      print('NoNoNoNoNoNoNoNoNoNoNoNoNoNo');
+    }
+  }
+
   /*=============== get detail onlick marker  ===============*/
-  void showdetail(var title) {
+  GoogleMapController mapController;
+  void showdetail(
+      var title, double latitude1, double longitude1, int province_id) {
+    getlistDistrictsByProvince(province_id);
+
     showModalBottomSheet(
         context: context,
         builder: (Builder) {
@@ -102,7 +147,8 @@ class _HomeState extends State<Home> {
                     child: Center(
                       child: Text(
                         '$title',
-                        style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -169,7 +215,17 @@ class _HomeState extends State<Home> {
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  Container(
+                      child: Column(
+                        children: <Widget>[
+                          ListView.builder(
+                          itemCount: listdistricts.length,
+                          itemBuilder: (BuildContext ctxt, int index) {
+                            return new Text(listdistricts[index]['dis_name']);
+                          })
+                        ],
+                      ))
                 ],
               ),
             ),
@@ -186,35 +242,32 @@ class _HomeState extends State<Home> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: menu.drawer,
-        appBar: AppBar(
-          title: Text("HOME"),
+      drawer: menu.drawer,
+      appBar: AppBar(
+        title: Text("HOME"),
+      ),
+      body: GoogleMap(
+        mapType: MapType.normal,
+        myLocationEnabled: true,
+        compassEnabled: true,
+        initialCameraPosition: CameraPosition(
+          target: LatLng(latitude, longitude),
+          zoom: zoom,
         ),
-        body: GoogleMap(
-          mapType: MapType.normal,
-          myLocationEnabled: true,
-          compassEnabled: true,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(latitude, longitude),
-            zoom: zoom,
-          ),
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
-          markers: Set<Marker>.of(markers.values),
-          polylines: Set<Polyline>.of(polylines.values),
-          /*polylines: {
-            Polyline(
-                polylineId: PolylineId("p1"),
-                color: Colors.red[300],
-                points: [
-                  LatLng(13.7123167, 100.728104),
-                  LatLng(13.655067, 100.722697),
-                  LatLng(13.648389, 100.753335),
-                  LatLng(13.705761, 100.779158),
-                  LatLng(13.7123167, 100.728104),
-                ])
-          },*/
-        ));
+        onMapCreated: (GoogleMapController controller) {
+          //_controller.complete(controller);
+          mapController = controller;
+        },
+        markers: Set<Marker>.of(markers.values),
+        polylines: Set<Polyline>.of(polylines.values),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context)
+              .push(new MaterialPageRoute(builder: (context) => Home()));
+        },
+        child: new Icon(Icons.refresh),
+      ),
+    );
   }
 }

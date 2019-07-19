@@ -8,6 +8,7 @@ use app\models\Pv;
 use app\models\Polygon;
 use yii\db\Query;
 use app\models\Dt;
+use app\models\Districts;
 
 class ApiController extends \yii\web\Controller
 {
@@ -23,8 +24,15 @@ class ApiController extends \yii\web\Controller
     public function actionGetallprovince()
     {
         ini_set("memory_limit","1000M");
-       //$provinces=Provinces::find()->joinWith(['polygons'])->asArray()->cache(true)->where(['provinces.id'=>1])->all();
-       $provinces=Provinces::find()->joinWith(['polygons'])->asArray()->cache(true)->all();
+       $provinces=Provinces::find()->joinWith(['polygons'])->asArray()->cache(true)->where(['provinces.id'=>1])->all();
+       //$provinces=Provinces::find()->joinWith(['polygons'])->asArray()->cache(true)->all();
+       \Yii::$app->response->format = Response::FORMAT_JSON;
+       return $provinces;
+    }
+    public function actionGetlistdistrict()
+    {
+       $provinces=Districts::find()->asArray()->cache(true)->where(['provinces_id'=>1])->all();
+       //$provinces=Provinces::find()->joinWith(['polygons'])->asArray()->cache(true)->all();
        \Yii::$app->response->format = Response::FORMAT_JSON;
        return $provinces;
     }
@@ -56,7 +64,8 @@ class ApiController extends \yii\web\Controller
 
     public function actionDtpolygon()
     {
-        ini_set("memory_limit","1000M");
+       // echo phpinfo();exit;
+        ini_set("memory_limit","100000M");
        $provinces=Dt::find()->all();
        //echo $provinces->shape;
        $ss=0;
