@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,9 @@ import 'package:maplaos/setting/setting.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:async_loader/async_loader.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_cache_store/flutter_cache_store.dart';
+import 'package:mysql1/mysql1.dart' as mysql;
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -27,6 +30,7 @@ class _HomeState extends State<Home> {
   var latitude = 17.974855;
   var longitude = 102.609986;
   double zoom = 5;
+  bool isloading=true;
 
   var currentLocation;
   void getCurrentLocation() {
@@ -43,18 +47,35 @@ class _HomeState extends State<Home> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
   Dio dio = Dio();
-  var test;
+  
   Future addmultimarker() async {
     var url = setting.apiUrl;
-    //dio.options.connectTimeout = 380000; //5s
-    //dio.options.receiveTimeout = 380000;
+   // dio.options.connectTimeout = 5000; //5s
+    //dio.options.receiveTimeout = 3000;
+
     try {
       Response response = await dio.get(
         "$url/api/getallprovince",
         options: buildCacheOptions(Duration(days: 7)),
       );
       if (response.statusCode == 200) {
-        for (final provinces in response.data) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString('provinces', response.toString());
+        print(response.data);
+        print('33333333333333333333333');
+        foreachlisprovinnces();
+        
+      } else {
+        print('getgggggggggggggggggggggggggggggggggggggggggg');
+      }
+    } on DioError catch (e) {
+      print('Nonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
+    }
+  }
+  void foreachlisprovinnces() async
+  {
+    for (final provinces in List()) {
           /*======== Marker =======*/
           final MarkerId markerId = MarkerId('$provinces["id"]');
           // creating a new MARKER
@@ -94,22 +115,73 @@ class _HomeState extends State<Home> {
               color: Colors.red[300],
               points: polylinelist);
 
-          setState(() {
-            markers[markerId] = marker;
-            polylines[polygonId] = polyline;
+          markers[markerId] = marker;
+          polylines[polygonId] = polyline;
+        }
+        setState(() {
+            markers=markers;
+            polylines=polylines;
             zoom = 10;
           });
-        }
-      } else {
-        print('getgggggggggggggggggggggggggggggggggggggggggg');
-      }
-    } on DioError catch (e) {
-      print('Nonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn');
-    }
   }
 
+  void testdb() async
+  {
+    final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+        host:setting.host,
+        port:setting.port,
+        user:setting.user,
+        password:setting.password,
+        db:setting.db));
+    // Query the database using a parameterized query
+    var results = await conn.query('select * from provinces where id=2');
+    for (var provinces in results) {
+          /*======== Marker =======*/
+          final MarkerId markerId = MarkerId('$provinces["id"]');
+          // creating a new MARKER
+          final Marker marker = Marker(
+            markerId: markerId,
+            position: LatLng(provinces['latitute'],provinces['longtitute']),
+            onTap: () {
+              /** zoom curent location on click */
+              mapController.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                      target: LatLng(provinces['latitute'],provinces['longtitute']),
+                      zoom: 8.0),
+                ),
+              );
+
+              /** Show modal details  */
+              showdetail(
+                  provinces["pro_name"] + '/' + provinces["pro_name_la"],provinces['latitute'],provinces['longtitute'],provinces['id']);
+            },
+          );
+
+          /*================ Polyline ===============*/
+          final PolylineId polygonId = PolylineId('$provinces["id"]');
+          final List<LatLng> polylinelist = <LatLng>[];
+          var polygons = await conn.query('select * from polygon where provinces_id=?',[provinces['id']]);
+          for (final polylinelatlong in polygons) {
+            polylinelist.add(LatLng(polylinelatlong['latitude'],polylinelatlong['longitude']));
+          }
+          final Polyline polyline = Polyline(
+              polylineId: polygonId,
+              color: Colors.red[300],
+              points: polylinelist);
+           markers[markerId] = marker;
+           polylines[polygonId] = polyline;
+        }
+        setState(() {
+            isloading=false;
+            markers=markers;
+            polylines=polylines;
+            zoom = 10;
+          });
+  }
   /*================= Get list district by provinces ===========*/
   List listdistricts = [];
+
   void getlistDistrictsByProvince(int province_id) async {
     var url = setting.apiUrl;
     try {
@@ -132,7 +204,6 @@ class _HomeState extends State<Home> {
   void showdetail(
       var title, double latitude1, double longitude1, int province_id) {
     getlistDistrictsByProvince(province_id);
-
     showModalBottomSheet(
         context: context,
         builder: (Builder) {
@@ -237,7 +308,8 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     getCurrentLocation();
-    addmultimarker();
+    testdb();
+    //addmultimarker();
   }
 
   Widget build(BuildContext context) {
@@ -246,7 +318,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text("HOME"),
       ),
-      body: GoogleMap(
+      body: isloading?Center( child: CircularProgressIndicator(),):GoogleMap(
         mapType: MapType.normal,
         myLocationEnabled: true,
         compassEnabled: true,
