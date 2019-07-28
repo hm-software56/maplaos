@@ -6,7 +6,7 @@ class Setting {
   var user = '2CEvh1t8JM';
   var password = '5N1nJoJJTN';
   var db = '2CEvh1t8JM';
-  var latitude = 17.974855;
-  var longitude = 102.609986;
+  double latitude = 17.974855;
+  double longitude = 102.609986;
   double zoom = 5;
 }

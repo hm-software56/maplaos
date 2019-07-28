@@ -32,6 +32,8 @@ dependencies:
   shared_preferences: ^0.5.3+4
   flutter_cache_store: ^0.6.0
   mysql1: ^0.17.0+1 
+  geocoder: ^0.2.1
+  geolocator: ^5.1.1+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
