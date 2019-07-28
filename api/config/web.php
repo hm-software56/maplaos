@@ -11,7 +11,26 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'modules' => [
+        // ...
+        'gii1' => [
+            'class' => 'yii\gii\Module',
+            'generators' => [
+                'mongoDbModel' => [
+                    'class' => 'yii\mongodb\gii\model\Generator'
+                ]
+            ],
+        ],
+    ],
     'components' => [
+        'mongodb' => [
+            'class' => '\yii\mongodb\Connection',
+            'dsn' => 'mongodb://localhost:27017/maplaosdb',
+           /* 'options' => [
+                "username" => "mongodb",
+                "password" => ""
+            ]*/
+        ],
         'i18n' => [
             'translations' => [
                 '*' => [

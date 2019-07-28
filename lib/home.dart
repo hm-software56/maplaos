@@ -27,15 +27,23 @@ class _HomeState extends State<Home> {
   void addmultiMaker() async
   {
     /*========= get curent position and coordinate ==========*/
-    //Position position  = await Geolocator().getCurrentPosition(desiredAccuracy:LocationAccuracy.low);
+  //Position position  = await Geolocator().getCurrentPosition(desiredAccuracy:LocationAccuracy.best);
    location.LocationData currentLocation = await location.Location().getLocation();
    print(currentLocation.latitude);
    print(currentLocation.longitude);
 
-    final coordinates = new Coordinates(currentLocation.latitude!=null?currentLocation.latitude:setting.latitude,currentLocation.longitude!=null?currentLocation.longitude:setting.longitude);
+    final coordinates = new Coordinates(currentLocation.latitude,currentLocation.longitude);
           var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
           var first = addresses.first;
-          var name=first.adminArea.split(" ");
+           print("${first.featureName} : ${first.addressLine}");
+           var name;
+           try{
+              name=first.featureName.split(" ",);
+              print('dddddddddddddddddddddddd');
+           }catch (c){
+              name=['Vientaine'];
+           }
+          
           print(name);
           print("${first.adminArea} : ${first.coordinates}");
           print('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww');
