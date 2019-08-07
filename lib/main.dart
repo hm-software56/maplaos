@@ -1,5 +1,7 @@
  import 'package:flutter/material.dart';
 import 'package:maplaos/home.dart';
+import 'package:maplaos/homescreen.dart';
+import 'package:splashscreen/splashscreen.dart';
 import 'package:maplaos/province.dart';
 
 void main() => runApp(MyApp());
@@ -9,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Maplaos',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home:Home(),
+      home:HomeScreen(),
     );
   }
 }
