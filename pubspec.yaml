@@ -36,6 +36,12 @@ dependencies:
   geolocator: ^5.1.1+1
   splashscreen: ^1.2.0
   flutter_launcher_icons: ^0.7.2+1
+  autocomplete_textfield: ^1.7.3
+  rich_alert: ^0.1.32
+  carousel_pro: ^1.0.0
+  cached_network_image: ^1.1.1
+  flutter_swiper: ^1.1.6
+  latlong: ^0.6.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

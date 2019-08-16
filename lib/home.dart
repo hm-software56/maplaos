@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
 import 'package:maplaos/setting/setting.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
@@ -11,6 +13,9 @@ import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as location;
 import 'model/formsearch.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:carousel_pro/carousel_pro.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -58,40 +63,61 @@ class _HomeState extends State<Home> {
         user: setting.user,
         password: setting.password,
         db: setting.db));
+    var find_search_step = 1;
     var results = await conn.query(
         'select * from provinces where MATCH(pro_name, pro_name_la) AGAINST("$name" IN NATURAL LANGUAGE MODE)');
-    //var results = await conn .query('select * from provinces where pro_name Like "%${name[0]}%"');
-    for (var provinces in results) {
+    if (results.length == 0) {
+      find_search_step = 2;
+      results = await conn.query(
+          'select * from districts where MATCH(dis_name, dis_name_la) AGAINST("$name" IN NATURAL LANGUAGE MODE)');
+      if (results.length == 0) {
+        find_search_step = 3;
+        results = await conn.query(
+            'select * from location where MATCH(loc_name, loc_name_la) AGAINST("$name" IN NATURAL LANGUAGE MODE)');
+      }
+    }
+
+    for (var result in results) {
+      /*
       /*======== Marker =======*/
-      final MarkerId markerId = MarkerId('$provinces["id"]');
+      final MarkerId markerId = MarkerId('$result["id"]');
       // creating a new MARKER
       final Marker marker = Marker(
         markerId: markerId,
-        position: LatLng(provinces['latitute'], provinces['longtitute']),
+        position: LatLng(result['latitude'], result['longitude']),
         onTap: () {
           /** zoom curent location on click */
           mapController.animateCamera(
             CameraUpdate.newCameraPosition(
               CameraPosition(
-                  target:
-                      LatLng(provinces['latitute'], provinces['longtitute']),
+                  target: LatLng(result['latitude'], result['longitude']),
                   zoom: 8.0),
             ),
           );
 
           /** Show modal details  */
-          showdetail(provinces["pro_name"] + '/' + provinces["pro_name_la"],
-              provinces['latitute'], provinces['longtitute'], provinces['id']);
+          showdetail(result);
         },
       );
       markers[markerId] = marker;
-
+      */
       /*========== add location in to maker ========*/
-      var locations = await conn.query(
-          'select * from location_tour where province_code=? and latitude!=0',
-          [provinces['pro_code']]);
+      var locations;
+      if (find_search_step == 1) {
+        locations = await conn.query(
+            'select l.*,ld.id as detail_id,ld.details,ld.details_la from location as l left join location_details as ld on ld.location_id=l.id where l.provinces_id=? and latitude!=0',
+            [result['id']]);
+      } else if (find_search_step == 2) {
+        locations = await conn.query(
+            'select l.*,ld.id as detail_id,ld.details,ld.details_la from location as l left join location_details as ld on ld.location_id=l.id where l.districts_id=? and latitude!=0',
+            [result['id']]);
+      } else {
+        locations = await conn.query(
+            'select l.*,ld.id as detail_id,ld.details,ld.details_la from location as l left join location_details as ld on ld.location_id=l.id where l.id=? and latitude!=0',
+            [result['id']]);
+      }
       for (var location in locations) {
-        final MarkerId markerId = MarkerId('$location["province_code"]');
+        final MarkerId markerId = MarkerId('$location["id"]_1');
         // creating a new MARKER
         final Marker marker = Marker(
           markerId: markerId,
@@ -107,8 +133,7 @@ class _HomeState extends State<Home> {
             );
 
             /** Show modal details  */
-            showdetail(location["name"] + '/' + location["name_la"],
-                location['latitude'], location['longitude'], location['id']);
+            showdetail(location, conn);
           },
         );
         markers[markerId] = marker;
@@ -127,8 +152,8 @@ class _HomeState extends State<Home> {
           polylineId: polygonId, color: Colors.red[300], points: polylinelist);
 
       polylines[polygonId] = polyline;*/
-      setting.latitude = provinces['latitute'];
-      setting.longitude = provinces['longtitute'];
+      setting.latitude = result['latitude'];
+      setting.longitude = result['longitude'];
     }
 
     setState(() {
@@ -143,8 +168,7 @@ class _HomeState extends State<Home> {
 
   /*=============== get detail onclick marker  ===============*/
   GoogleMapController mapController;
-  void showdetail(
-      var title, double latitude1, double longitude1, int province_id) {
+  void showdetail(var data, mysql.MySqlConnection conn) async {
     showModalBottomSheet(
         context: context,
         builder: (Builder) {
@@ -158,73 +182,104 @@ class _HomeState extends State<Home> {
                     color: Colors.red,
                     child: Center(
                       child: Text(
-                        '$title',
+                        data['loc_name'] + '/' + data['loc_name_la'],
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                   Container(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    padding: EdgeInsets.all(5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
-                          child: FlatButton(
-                            onPressed: () => {
-                              launch("tel://21213123123"),
-                            },
-                            color: Colors.white,
-                            padding: EdgeInsets.all(10.0),
-                            child: Column(
-                              // Replace with a Row for horizontal icon + text
-                              children: <Widget>[
-                                Icon(
-                                  Icons.call,
-                                  color: Colors.red,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              child: FlatButton(
+                                onPressed: () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          fullscreenDialog: true, 
+                                          builder: (context) =>
+                                              Locationimg(data['id'])))
+                                },
+                                color: Colors.white,
+                                padding: EdgeInsets.all(10.0),
+                                child: Column(
+                                  // Replace with a Row for horizontal icon + text
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.image,
+                                      color: Colors.red,
+                                    ),
+                                    Text("Image​")
+                                  ],
                                 ),
-                                Text("CALL")
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: FlatButton(
-                            onPressed: () => {
-                              launch("http://gooogle.com"),
-                            },
-                            color: Colors.white,
-                            padding: EdgeInsets.all(10.0),
-                            child: Column(
-                              // Replace with a Row for horizontal icon + text
-                              children: <Widget>[
-                                Icon(
-                                  Icons.important_devices,
-                                  color: Colors.red,
+                            Expanded(
+                              child: FlatButton(
+                                onPressed: () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Locationimg(data['id'])))
+                                },
+                                color: Colors.white,
+                                padding: EdgeInsets.all(10.0),
+                                child: Column(
+                                  // Replace with a Row for horizontal icon + text
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.important_devices,
+                                      color: Colors.red,
+                                    ),
+                                    Text("WEBSITE")
+                                  ],
                                 ),
-                                Text("WEBSITE")
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: FlatButton(
-                            onPressed: () => {
-                              // openGoogleMap(latitude, longitude)
-                            },
-                            color: Colors.white,
-                            padding: EdgeInsets.all(10.0),
-                            child: Column(
-                              // Replace with a Row for horizontal icon + text
-                              children: <Widget>[
-                                Icon(
-                                  Icons.directions,
-                                  color: Colors.red,
+                            Expanded(
+                              child: FlatButton(
+                                onPressed: () => {
+                                  // openGoogleMap(latitude, longitude)
+                                },
+                                color: Colors.white,
+                                padding: EdgeInsets.all(10.0),
+                                child: Column(
+                                  // Replace with a Row for horizontal icon + text
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.directions,
+                                      color: Colors.red,
+                                    ),
+                                    Text("GO")
+                                  ],
                                 ),
-                                Text("GO")
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
+                        Text(
+                          data['details'].toString(),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          maxLines: data['details_la'].toString().length != 0
+                              ? 5
+                              : 11,
+                        ),
+                        Text(
+                          data['details_la'].toString(),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                          maxLines:
+                              data['details'].toString().length != 0 ? 5 : 11,
+                        ),
+                        Divider(),
                       ],
                     ),
                   ),
@@ -237,11 +292,17 @@ class _HomeState extends State<Home> {
 
 /*===================== Search =======================*/
   static final GlobalKey<ScaffoldState> scaffoldKey =
-      new GlobalKey<ScaffoldState>();
-
+      GlobalKey<ScaffoldState>();
+  GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
   TextEditingController _searchQuery;
   bool _isSearching = false;
-  String searchQuery = "Search query";
+  String searchQuery = "";
+  List<String> list_autocomplete = [];
+  void autocomplete() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    list_autocomplete = prefs.getStringList('list_autocomplete');
+  }
+
   void _startSearch() {
     ModalRoute.of(context)
         .addLocalHistoryEntry(new LocalHistoryEntry(onRemove: _stopSearching));
@@ -259,16 +320,28 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildSearchField() {
-    return new TextField(
-      controller: _searchQuery,
-      autofocus: true,
-      decoration: const InputDecoration(
-        hintText: 'Search...',
-        border: InputBorder.none,
-        hintStyle: const TextStyle(color: Colors.white30),
+    return SimpleAutoCompleteTextField(
+      controller: TextEditingController(text: searchQuery),
+      textChanged: (text) {
+        updateSearchQuery(text);
+      },
+      textSubmitted: (text) {
+        updateSearchQueryByClicklist(text);
+      },
+      clearOnSubmit: true,
+      key: key,
+      suggestions: list_autocomplete,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        hintText: 'Search....',
+        contentPadding: EdgeInsets.all(10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.white, width: 0.0),
+        ),
+        hintStyle: const TextStyle(color: Colors.white),
       ),
-      style: const TextStyle(color: Colors.white, fontSize: 16.0),
-      onChanged: updateSearchQuery,
     );
   }
 
@@ -277,6 +350,18 @@ class _HomeState extends State<Home> {
       searchQuery = newQuery;
     });
     print("search query " + newQuery);
+  }
+
+  void updateSearchQueryByClicklist(String newQuery) {
+    setState(() {
+      searchQuery = newQuery;
+      isloading = true;
+      title = searchQuery;
+    });
+    markers.clear();
+    polylines.clear();
+    addmultiMaker(searchQuery);
+    Navigator.pop(context);
   }
 
   List<Widget> _buildActions() {
@@ -309,18 +394,19 @@ class _HomeState extends State<Home> {
   }
 
 /*=================== switch map type ===========*/
-MapType _currentMapType = MapType.normal;
-void _onMapTypeButtonPressed() {
+  MapType _currentMapType = MapType.normal;
+  void _onMapTypeButtonPressed() {
     setState(() {
       _currentMapType = _currentMapType == MapType.normal
           ? MapType.satellite
           : MapType.normal;
     });
   }
+
   @override
   void initState() {
     super.initState();
-    // getCurrentLocation();
+    autocomplete();
     addmultiMaker(null);
   }
 
@@ -355,18 +441,18 @@ void _onMapTypeButtonPressed() {
                   polylines: Set<Polyline>.of(polylines.values),
                 ),
                 Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: new FloatingActionButton(
-                  onPressed: _onMapTypeButtonPressed,
-                  child: new Icon(
-                    Icons.map,
-                    color: Colors.white,
+                  padding: const EdgeInsets.all(5.0),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: new FloatingActionButton(
+                      onPressed: _onMapTypeButtonPressed,
+                      child: new Icon(
+                        Icons.map,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
               ]));
   }
 }
