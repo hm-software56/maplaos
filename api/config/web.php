@@ -11,46 +11,14 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
-    'modules' => [
-        // ...
-        'gii1' => [
-            'class' => 'yii\gii\Module',
-            'generators' => [
-                'mongoDbModel' => [
-                    'class' => 'yii\mongodb\gii\model\Generator'
-                ]
-            ],
-        ],
-    ],
     'components' => [
-        'mongodb' => [
-            'class' => '\yii\mongodb\Connection',
-            'dsn' => 'mongodb://localhost:27017/maplaosdb',
-           /* 'options' => [
-                "username" => "mongodb",
-                "password" => ""
-            ]*/
-        ],
-        'i18n' => [
-            'translations' => [
-                '*' => [
-                    'class'          => 'yii\i18n\PhpMessageSource',
-                    'basePath'       => '@app/messages', // if advanced application, set @frontend/messages
-                    'sourceLanguage' => 'en',
-                    'fileMap'        => [
-                        //'main' => 'main.php',
-                    ],
-                ],
-            ],
-        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => '6u-dPO12SDk2pjM9uNrZswuc-GREiJ2G',
+            'cookieValidationKey' => 'mWBsXGEb6i26EaWQOSIFVBVdMCv2dA7i',
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-        
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,

@@ -89,5 +89,12 @@ class ApiController extends \yii\web\Controller
 
        echo $ss;
     }
+
+    public function actionLoadimg()
+    {
+        
+        \Yii::$app->response->format=Response::FORMAT_JSON;
+            return $model;
+    }
 }
 

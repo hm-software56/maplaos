@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,8 +15,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as location;
 import 'model/formsearch.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-import 'package:carousel_pro/carousel_pro.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -41,13 +41,14 @@ class _HomeState extends State<Home> {
         await location.Location().getLocation();
     final coordinates =
         new Coordinates(currentLocation.latitude, currentLocation.longitude);
-    var addresses =
-        await Geocoder.local.findAddressesFromCoordinates(coordinates);
-    var first = addresses.first;
-    print("${first.adminArea} : ${first.addressLine}");
+
+    //print("${first.adminArea} : ${first.addressLine}");
     var name;
     if (keysearch == null) {
       try {
+        var addresses =
+            await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        var first = addresses.first;
         name = first.adminArea;
       } catch (c) {
         name = 'Vientiane';
@@ -133,7 +134,8 @@ class _HomeState extends State<Home> {
             );
 
             /** Show modal details  */
-            showdetail(location, conn);
+            showdetail(
+                location, currentLocation.latitude, currentLocation.longitude);
           },
         );
         markers[markerId] = marker;
@@ -168,7 +170,52 @@ class _HomeState extends State<Home> {
 
   /*=============== get detail onclick marker  ===============*/
   GoogleMapController mapController;
-  void showdetail(var data, mysql.MySqlConnection conn) async {
+
+  void showdetail(var data, var currentLocation_latitude, var currentLocation_longitude) async {
+    Response response;
+    var du_km;
+    var du_m;
+    var di_minuts;
+    var dis_hours;
+    var sumary_m_km;
+    var sumary_minuts_hour;
+    var lat = data["latitude"];
+    var long = data["longitude"];
+
+    ///var clong=currentLocation_longitude;
+    //var clat=currentLocation_latitude;
+    var clong = '102.610895';
+    var clat = '17.966028';
+    var url = 'http://192.168.43.55:8080/images/11.jpg';
+    try {
+      response = await Dio().get('${setting.apiUrl}/api/loadimg&id=');
+    } catch (e) {}
+    try {
+      response = await Dio().get(
+          "https://api.mapbox.com/directions/v5/mapbox/driving/${clong},${clat};${long},${lat}?access_token=pk.eyJ1IjoiZGF4aW9uZ2luZm8iLCJhIjoiY2prdXVucWZ3MGIzYzNrcnJwMWw0eTRueSJ9.4Ow9sGdMnMG3cVPkHuDphA");
+      du_km = response.data['routes'][0]['legs'][0]['distance'] / 1000;
+      du_m = response.data['routes'][0]['legs'][0]['distance'];
+      di_minuts = response.data['routes'][0]['legs'][0]['duration'] / 60;
+      dis_hours = response.data['routes'][0]['legs'][0]['duration'] / 3600;
+      if (du_km >= 1) {
+        sumary_m_km =
+            "​ໄລ​ຍະ​ທາງ​/distance: " + du_km.toStringAsFixed(2) + ' KM';
+      } else {
+        sumary_m_km = "​ໄລ​ຍະ​ທາງ​/distance: " + du_m.toStringAsFixed(2) + " M";
+      }
+      if (dis_hours >= 1) {
+        sumary_minuts_hour = "​​ເວ​ລາ​ເດີນ​ທາງ/duration: " +
+            dis_hours.toStringAsFixed(2) +
+            ' ​ຊົ່ວ​ໂມງ/hours​';
+      } else {
+        sumary_minuts_hour = "​​​ເວ​ລາ​ເດີນ​ທາງ/duration: " +
+            di_minuts.toStringAsFixed(2) +
+            "​ ນາ​ທີ/minuts";
+      }
+    } catch (e) {
+      print(e);
+    }
+    Size size = MediaQuery.of(context).size;
     showModalBottomSheet(
         context: context,
         builder: (Builder) {
@@ -202,7 +249,7 @@ class _HomeState extends State<Home> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          fullscreenDialog: true, 
+                                          fullscreenDialog: true,
                                           builder: (context) =>
                                               Locationimg(data['id'])))
                                 },
@@ -264,22 +311,63 @@ class _HomeState extends State<Home> {
                             ),
                           ],
                         ),
-                        Text(
-                          data['details'].toString(),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          maxLines: data['details_la'].toString().length != 0
-                              ? 5
-                              : 11,
-                        ),
-                        Text(
-                          data['details_la'].toString(),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
-                          maxLines:
-                              data['details'].toString().length != 0 ? 5 : 11,
-                        ),
+
                         Divider(),
+                        Text(sumary_m_km),
+                        Text(sumary_minuts_hour),
+                        //Image.network(url),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                  imageUrl: url,
+                                  placeholder: (context, url) =>
+                                      new CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      new Icon(Icons.error),
+                                ),
+                              ),
+                              Expanded(
+                                child: CachedNetworkImage(
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                  imageUrl: url,
+                                  placeholder: (context, url) =>
+                                      new CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      new Icon(Icons.error),
+                                ),
+                              ),
+                            ]),
+                        /*SizedBox(
+                          height: size.width * 0.3,
+                          child: Wrap(
+                            children: <Widget>[
+                              Text(
+                                data['details'].toString(),
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: true,
+                                maxLines:
+                                    data['details_la'].toString().length != 0
+                                        ? 5
+                                        : 11,
+                              ),
+                              Text(
+                                data['details_la'].toString(),
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: true,
+                                maxLines:
+                                    data['details'].toString().length != 0
+                                        ? 5
+                                        : 11,
+                              ),
+                            ],
+                          ),
+                        ),*/
                       ],
                     ),
                   ),

@@ -2,12 +2,12 @@ import "package:flutter/material.dart";
 import 'package:mysql1/mysql1.dart';
 
 class Setting {
-  var apiUrl = "http://192.168.100.13:8080/index.php?r=";
-  var urlimg = "http://192.168.100.165:8080/images";
+  var apiUrl = "http://192.168.43.55:8080/index.php?r=";
+  var urlimg = "http://10.11.13.71:8080/images";
   //var host = 'remotemysql.com';
-  //var host = '192.168.43.55';
-  //var host = '10.11.14.122';
-  var host = '192.168.100.165';
+  var host = '192.168.43.55';
+  //var host = '10.11.13.71';
+  //var host = '192.168.100.165';
   int port = 3306;
   //// var user = '2CEvh1t8JM';
   //var password = '5N1nJoJJTN';
