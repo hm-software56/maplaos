@@ -13,7 +13,6 @@ import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as location;
-import 'model/formsearch.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:dio/dio.dart';
 
@@ -27,7 +26,6 @@ class _HomeState extends State<Home> {
   Completer<GoogleMapController> _controller = Completer();
   Menu menu = Menu();
   Setting setting = new Setting();
-  Formsearch search = Formsearch();
   bool isloading = true;
   String title = "Home";
 
@@ -171,45 +169,62 @@ class _HomeState extends State<Home> {
   /*=============== get detail onclick marker  ===============*/
   GoogleMapController mapController;
 
-  void showdetail(var data, var currentLocation_latitude, var currentLocation_longitude) async {
+  void showdetail(var data, var currentLocation_latitude,
+      var currentLocation_longitude) async {
     Response response;
     var du_km;
     var du_m;
     var di_minuts;
     var dis_hours;
-    var sumary_m_km;
-    var sumary_minuts_hour;
+    var sumary_m_km = "unkown";
+    var sumary_minuts_hour = "​​unkown";
     var lat = data["latitude"];
     var long = data["longitude"];
 
-    ///var clong=currentLocation_longitude;
-    //var clat=currentLocation_latitude;
-    var clong = '102.610895';
-    var clat = '17.966028';
-    var url = 'http://192.168.43.55:8080/images/11.jpg';
+    var clong=currentLocation_longitude;
+    var clat=currentLocation_latitude;
+    var locationId=data['id'];
+    //var clong = '102.610895';
+    //var clat = '17.966028';
+    var photo1;
+    var photo2;
     try {
-      response = await Dio().get('${setting.apiUrl}/api/loadimg&id=');
-    } catch (e) {}
+      response = await Dio(BaseOptions(
+        connectTimeout: 1000,
+        receiveTimeout: 1000,
+      )).get('${setting.apiUrl}/api/loadimg&id=${locationId}');
+      int i = 0;
+      for (var data in response.data) {
+        i = i + 1;
+        if (i == 1) {
+          photo1 = '${setting.urlimg}/${data}';
+        } else {
+          photo2 = '${setting.urlimg}/${data}';
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
     try {
-      response = await Dio().get(
+      response = await Dio(BaseOptions(
+        connectTimeout: 1000,
+        receiveTimeout: 1000,
+      )).get(
           "https://api.mapbox.com/directions/v5/mapbox/driving/${clong},${clat};${long},${lat}?access_token=pk.eyJ1IjoiZGF4aW9uZ2luZm8iLCJhIjoiY2prdXVucWZ3MGIzYzNrcnJwMWw0eTRueSJ9.4Ow9sGdMnMG3cVPkHuDphA");
       du_km = response.data['routes'][0]['legs'][0]['distance'] / 1000;
       du_m = response.data['routes'][0]['legs'][0]['distance'];
       di_minuts = response.data['routes'][0]['legs'][0]['duration'] / 60;
       dis_hours = response.data['routes'][0]['legs'][0]['duration'] / 3600;
       if (du_km >= 1) {
-        sumary_m_km =
-            "​ໄລ​ຍະ​ທາງ​/distance: " + du_km.toStringAsFixed(2) + ' KM';
+        sumary_m_km =du_km.toStringAsFixed(2) + ' KM';
       } else {
-        sumary_m_km = "​ໄລ​ຍະ​ທາງ​/distance: " + du_m.toStringAsFixed(2) + " M";
+        sumary_m_km = du_m.toStringAsFixed(2) + " M";
       }
       if (dis_hours >= 1) {
-        sumary_minuts_hour = "​​ເວ​ລາ​ເດີນ​ທາງ/duration: " +
-            dis_hours.toStringAsFixed(2) +
+        sumary_minuts_hour = dis_hours.toStringAsFixed(2) +
             ' ​ຊົ່ວ​ໂມງ/hours​';
       } else {
-        sumary_minuts_hour = "​​​ເວ​ລາ​ເດີນ​ທາງ/duration: " +
-            di_minuts.toStringAsFixed(2) +
+        sumary_minuts_hour = di_minuts.toStringAsFixed(2) +
             "​ ນາ​ທີ/minuts";
       }
     } catch (e) {
@@ -219,159 +234,175 @@ class _HomeState extends State<Home> {
     showModalBottomSheet(
         context: context,
         builder: (Builder) {
-          return Container(
-            color: Colors.white,
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    color: Colors.red,
-                    child: Center(
-                      child: Text(
-                        data['loc_name'] + '/' + data['loc_name_la'],
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+          return SingleChildScrollView(
+            child: Container(
+              color: Colors.white,
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      color: Colors.red,
+                      child: Center(
+                        child: Text(
+                          data['loc_name'] + '/' + data['loc_name_la'],
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Expanded(
-                              child: FlatButton(
-                                onPressed: () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          fullscreenDialog: true,
-                                          builder: (context) =>
-                                              Locationimg(data['id'])))
-                                },
-                                color: Colors.white,
-                                padding: EdgeInsets.all(10.0),
-                                child: Column(
-                                  // Replace with a Row for horizontal icon + text
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.image,
-                                      color: Colors.red,
-                                    ),
-                                    Text("Image​")
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: FlatButton(
-                                onPressed: () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Locationimg(data['id'])))
-                                },
-                                color: Colors.white,
-                                padding: EdgeInsets.all(10.0),
-                                child: Column(
-                                  // Replace with a Row for horizontal icon + text
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.important_devices,
-                                      color: Colors.red,
-                                    ),
-                                    Text("WEBSITE")
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: FlatButton(
-                                onPressed: () => {
-                                  // openGoogleMap(latitude, longitude)
-                                },
-                                color: Colors.white,
-                                padding: EdgeInsets.all(10.0),
-                                child: Column(
-                                  // Replace with a Row for horizontal icon + text
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.directions,
-                                      color: Colors.red,
-                                    ),
-                                    Text("GO")
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        Divider(),
-                        Text(sumary_m_km),
-                        Text(sumary_minuts_hour),
-                        //Image.network(url),
-                        Row(
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Expanded(
-                                child: CachedNetworkImage(
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                  imageUrl: url,
-                                  placeholder: (context, url) =>
-                                      new CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      new Icon(Icons.error),
+                                child: FlatButton(
+                                  onPressed: () => {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            fullscreenDialog: true,
+                                            builder: (context) =>
+                                                Locationimg(data['id'])))
+                                  },
+                                  color: Colors.white,
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Column(
+                                    // Replace with a Row for horizontal icon + text
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.image,
+                                        color: Colors.red,
+                                      ),
+                                      Text("Image​")
+                                    ],
+                                  ),
                                 ),
                               ),
                               Expanded(
-                                child: CachedNetworkImage(
-                                  width: 100,
-                                  fit: BoxFit.cover,
-                                  imageUrl: url,
-                                  placeholder: (context, url) =>
-                                      new CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      new Icon(Icons.error),
+                                child: FlatButton(
+                                  onPressed: () => {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Locationimg(data['id'])))
+                                  },
+                                  color: Colors.white,
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Column(
+                                    // Replace with a Row for horizontal icon + text
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.important_devices,
+                                        color: Colors.red,
+                                      ),
+                                      Text("WEBSITE")
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ]),
-                        /*SizedBox(
-                          height: size.width * 0.3,
-                          child: Wrap(
-                            children: <Widget>[
-                              Text(
-                                data['details'].toString(),
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: true,
-                                maxLines:
-                                    data['details_la'].toString().length != 0
-                                        ? 5
-                                        : 11,
-                              ),
-                              Text(
-                                data['details_la'].toString(),
-                                overflow: TextOverflow.ellipsis,
-                                softWrap: true,
-                                maxLines:
-                                    data['details'].toString().length != 0
-                                        ? 5
-                                        : 11,
+                              Expanded(
+                                child: FlatButton(
+                                  onPressed: () => {
+                                    // openGoogleMap(latitude, longitude)
+                                  },
+                                  color: Colors.white,
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Column(
+                                    // Replace with a Row for horizontal icon + text
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.directions,
+                                        color: Colors.red,
+                                      ),
+                                      Text("GO")
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ),*/
-                      ],
+
+                          Divider(),
+                          ListTile(
+                            leading: Icon(Icons.timeline,color: Colors.red,),
+                            title: Text('​ໄລ​ຍະ​ທາງ​/distance'),
+                            subtitle: Text(sumary_m_km),
+                            trailing: Icon(Icons.more_vert),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.alarm,color: Colors.red,),
+                            title: Text('ເວ​ລາ​ເດີນ​ທາງ/duration'),
+                            subtitle: Text(sumary_minuts_hour),
+                            trailing: Icon(Icons.more_vert),
+                          ),
+                          Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      height: 150,
+                                      imageUrl: photo1,
+                                      placeholder: (context, url) => new Center(
+                                          child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          new Icon(Icons.error),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      height: 150,
+                                      imageUrl: photo2,
+                                      placeholder: (context, url) => new Center(
+                                          child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          new Icon(Icons.error),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                          /*SizedBox(
+                            height: size.width * 0.3,
+                            child: Wrap(
+                              children: <Widget>[
+                                Text(
+                                  data['details'].toString(),
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                  maxLines:
+                                      data['details_la'].toString().length != 0
+                                          ? 5
+                                          : 11,
+                                ),
+                                Text(
+                                  data['details_la'].toString(),
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                  maxLines:
+                                      data['details'].toString().length != 0
+                                          ? 5
+                                          : 11,
+                                ),
+                              ],
+                            ),
+                          ),*/
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -501,7 +532,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
         //key: _scaffoldKey,
-        drawer: menu.drawer,
+        drawer: menu,
         key: scaffoldKey,
         appBar: new AppBar(
           centerTitle: true,

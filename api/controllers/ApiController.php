@@ -9,6 +9,7 @@ use app\models\Polygon;
 use yii\db\Query;
 use app\models\Dt;
 use app\models\Districts;
+use app\models\Photo;
 
 class ApiController extends \yii\web\Controller
 {
@@ -92,9 +93,19 @@ class ApiController extends \yii\web\Controller
 
     public function actionLoadimg()
     {
-        
+        $photos=[];
+        $photo_location=Photo::find()->where(['location_id'=>$_GET['id']])->all();
+        if(!empty($photo_location))
+        {
+            foreach ($photo_location as $photo)
+            {
+                $photos[]=$photo->photo;
+            }
+        }else{
+            $photos=['noimg.png','noimg.png'];
+        }
         \Yii::$app->response->format=Response::FORMAT_JSON;
-            return $model;
+            return $photos;
     }
 }
 

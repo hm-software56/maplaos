@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=gweb_db',
+    'dsn' => 'mysql:host=localhost;dbname=maplaos_db',
     'username' => 'root',
     'password' => 'Da123!@#',
     'charset' => 'utf8',

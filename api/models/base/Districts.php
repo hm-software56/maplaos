@@ -19,6 +19,7 @@ use Yii;
  *
  * @property \app\models\Provinces $provinces
  * @property \app\models\LocationDetails[] $locationDetails
+ * @property \app\models\Polygon[] $polygons
  * @property \app\models\Villages[] $villages
  * @property string $aliasModel
  */
@@ -80,6 +81,14 @@ abstract class Districts extends \yii\db\ActiveRecord
     public function getLocationDetails()
     {
         return $this->hasMany(\app\models\LocationDetails::className(), ['districts_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPolygons()
+    {
+        return $this->hasMany(\app\models\Polygon::className(), ['districts_id' => 'id']);
     }
 
     /**

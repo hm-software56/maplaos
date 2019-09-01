@@ -10,10 +10,10 @@ use Yii;
  * This is the base-model class for table "location_busines".
  *
  * @property integer $id
+ * @property double $latitude
+ * @property double $longitude
  * @property string $loc_name
- * @property string $loc_name_la
- * @property double $latitute
- * @property double $logtitute
+ * @property string $loc_name_en
  * @property integer $type_location_id
  *
  * @property \app\models\TypeLocation $typeLocation
@@ -39,10 +39,10 @@ abstract class LocationBusines extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['loc_name', 'loc_name_la', 'latitute', 'logtitute', 'type_location_id'], 'required'],
-            [['latitute', 'logtitute'], 'number'],
+            [['latitude', 'longitude', 'loc_name', 'loc_name_en'], 'required'],
+            [['latitude', 'longitude'], 'number'],
             [['type_location_id'], 'integer'],
-            [['loc_name', 'loc_name_la'], 'string', 'max' => 255],
+            [['loc_name', 'loc_name_en'], 'string', 'max' => 255],
             [['type_location_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\TypeLocation::className(), 'targetAttribute' => ['type_location_id' => 'id']]
         ];
     }
@@ -54,10 +54,10 @@ abstract class LocationBusines extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'latitude' => 'Latitude',
+            'longitude' => 'Longitude',
             'loc_name' => 'Loc Name',
-            'loc_name_la' => 'Loc Name La',
-            'latitute' => 'Latitute',
-            'logtitute' => 'Logtitute',
+            'loc_name_en' => 'Loc Name En',
             'type_location_id' => 'Type Location ID',
         ];
     }
