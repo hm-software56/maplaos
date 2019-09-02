@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maplaos/home.dart';
 import 'package:maplaos/main.dart';
+import 'package:maplaos/model/alert.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
@@ -39,26 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return RichAlertDialog(
-              //uses the custom alert dialog
-              alertTitle: richTitle("Warning/ແຈ້ງ​ເຕືອນ"),
-              alertSubtitle: richSubtitle(
-                  "Please check connection/ກວດ​ການ​ເຊື່ອມ​ຕໍ່​ເນັດ"),
-              alertType: RichAlertType.WARNING,
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.refresh,
-                    color: Colors.red,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => MyApp()));
-                  },
-                )
-              ],
-            );
-          });
+            return Alert();
+          }
+      );
     }
   }
 

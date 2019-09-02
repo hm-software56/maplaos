@@ -5,12 +5,13 @@ import '../main.dart';
 class Alert extends StatefulWidget {
   @override
   _AlertState createState() => _AlertState();
-  var alertconnetion= _AlertState().alertconnetion();
 }
 
 class _AlertState extends State<Alert> {
-   alertconnetion(){
-    RichAlertDialog(
+   
+  @override
+  Widget build(BuildContext context) {
+    return RichAlertDialog(
               //uses the custom alert dialog
               alertTitle: richTitle("Warning/ແຈ້ງ​ເຕືອນ"),
               alertSubtitle: richSubtitle(
@@ -28,12 +29,6 @@ class _AlertState extends State<Alert> {
                   },
                 )
               ],
-            ); 
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      
-    );
+            );
   }
 }

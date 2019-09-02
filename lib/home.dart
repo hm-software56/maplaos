@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
+import 'package:maplaos/model/loadimg.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,6 +16,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as location;
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:dio/dio.dart';
+
+import 'model/direction_caculate.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -75,7 +78,6 @@ class _HomeState extends State<Home> {
             'select * from location where MATCH(loc_name, loc_name_la) AGAINST("$name" IN NATURAL LANGUAGE MODE)');
       }
     }
-
     for (var result in results) {
       /*
       /*======== Marker =======*/
@@ -171,78 +173,27 @@ class _HomeState extends State<Home> {
 
   void showdetail(var data, var currentLocation_latitude,
       var currentLocation_longitude) async {
-    Response response;
-    var du_km;
-    var du_m;
-    var di_minuts;
-    var dis_hours;
-    var sumary_m_km = "unkown";
-    var sumary_minuts_hour = "​​unkown";
-    var lat = data["latitude"];
-    var long = data["longitude"];
-
-    var clong=currentLocation_longitude;
-    var clat=currentLocation_latitude;
-    var locationId=data['id'];
-    //var clong = '102.610895';
-    //var clat = '17.966028';
-    var photo1;
-    var photo2;
-    try {
-      response = await Dio(BaseOptions(
-        connectTimeout: 1000,
-        receiveTimeout: 1000,
-      )).get('${setting.apiUrl}/api/loadimg&id=${locationId}');
-      int i = 0;
-      for (var data in response.data) {
-        i = i + 1;
-        if (i == 1) {
-          photo1 = '${setting.urlimg}/${data}';
-        } else {
-          photo2 = '${setting.urlimg}/${data}';
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-    try {
-      response = await Dio(BaseOptions(
-        connectTimeout: 1000,
-        receiveTimeout: 1000,
-      )).get(
-          "https://api.mapbox.com/directions/v5/mapbox/driving/${clong},${clat};${long},${lat}?access_token=pk.eyJ1IjoiZGF4aW9uZ2luZm8iLCJhIjoiY2prdXVucWZ3MGIzYzNrcnJwMWw0eTRueSJ9.4Ow9sGdMnMG3cVPkHuDphA");
-      du_km = response.data['routes'][0]['legs'][0]['distance'] / 1000;
-      du_m = response.data['routes'][0]['legs'][0]['distance'];
-      di_minuts = response.data['routes'][0]['legs'][0]['duration'] / 60;
-      dis_hours = response.data['routes'][0]['legs'][0]['duration'] / 3600;
-      if (du_km >= 1) {
-        sumary_m_km =du_km.toStringAsFixed(2) + ' KM';
-      } else {
-        sumary_m_km = du_m.toStringAsFixed(2) + " M";
-      }
-      if (dis_hours >= 1) {
-        sumary_minuts_hour = dis_hours.toStringAsFixed(2) +
-            ' ​ຊົ່ວ​ໂມງ/hours​';
-      } else {
-        sumary_minuts_hour = di_minuts.toStringAsFixed(2) +
-            "​ ນາ​ທີ/minuts";
-      }
-    } catch (e) {
-      print(e);
-    }
-    Size size = MediaQuery.of(context).size;
     showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        backgroundColor: Colors.white,
         context: context,
         builder: (Builder) {
           return SingleChildScrollView(
             child: Container(
-              color: Colors.white,
+              color: Colors.transparent,
               child: Center(
                 child: Column(
                   children: <Widget>[
                     Container(
+                      decoration: new BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: new BorderRadius.only(
+                              topLeft: const Radius.circular(20.0),
+                              topRight: const Radius.circular(20.0))),
                       padding: EdgeInsets.all(10),
-                      color: Colors.red,
+                      //color: Colors.red,
                       child: Center(
                         child: Text(
                           data['loc_name'] + '/' + data['loc_name_la'],
@@ -269,7 +220,7 @@ class _HomeState extends State<Home> {
                                             builder: (context) =>
                                                 Locationimg(data['id'])))
                                   },
-                                  color: Colors.white,
+                                  //color: Colors.white,
                                   padding: EdgeInsets.all(10.0),
                                   child: Column(
                                     // Replace with a Row for horizontal icon + text
@@ -292,7 +243,7 @@ class _HomeState extends State<Home> {
                                             builder: (context) =>
                                                 Locationimg(data['id'])))
                                   },
-                                  color: Colors.white,
+                                  //color: Colors.white,
                                   padding: EdgeInsets.all(10.0),
                                   child: Column(
                                     // Replace with a Row for horizontal icon + text
@@ -311,7 +262,7 @@ class _HomeState extends State<Home> {
                                   onPressed: () => {
                                     // openGoogleMap(latitude, longitude)
                                   },
-                                  color: Colors.white,
+                                  // color: Colors.white,
                                   padding: EdgeInsets.all(10.0),
                                   child: Column(
                                     // Replace with a Row for horizontal icon + text
@@ -327,77 +278,13 @@ class _HomeState extends State<Home> {
                               ),
                             ],
                           ),
-
                           Divider(),
-                          ListTile(
-                            leading: Icon(Icons.timeline,color: Colors.red,),
-                            title: Text('​ໄລ​ຍະ​ທາງ​/distance'),
-                            subtitle: Text(sumary_m_km),
-                            trailing: Icon(Icons.more_vert),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.alarm,color: Colors.red,),
-                            title: Text('ເວ​ລາ​ເດີນ​ທາງ/duration'),
-                            subtitle: Text(sumary_minuts_hour),
-                            trailing: Icon(Icons.more_vert),
-                          ),
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      height: 150,
-                                      imageUrl: photo1,
-                                      placeholder: (context, url) => new Center(
-                                          child: CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) =>
-                                          new Icon(Icons.error),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      height: 150,
-                                      imageUrl: photo2,
-                                      placeholder: (context, url) => new Center(
-                                          child: CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) =>
-                                          new Icon(Icons.error),
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                          /*SizedBox(
-                            height: size.width * 0.3,
-                            child: Wrap(
-                              children: <Widget>[
-                                Text(
-                                  data['details'].toString(),
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: true,
-                                  maxLines:
-                                      data['details_la'].toString().length != 0
-                                          ? 5
-                                          : 11,
-                                ),
-                                Text(
-                                  data['details_la'].toString(),
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: true,
-                                  maxLines:
-                                      data['details'].toString().length != 0
-                                          ? 5
-                                          : 11,
-                                ),
-                              ],
-                            ),
-                          ),*/
+                          DirectionCaculate(
+                              data["longitude"],
+                              data["latitude"],
+                              currentLocation_longitude,
+                              currentLocation_latitude),
+                          Loadimg(data['id']),
                         ],
                       ),
                     ),
