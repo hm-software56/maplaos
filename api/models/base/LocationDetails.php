@@ -13,16 +13,9 @@ use Yii;
  * @property string $phone
  * @property string $email
  * @property string $details
- * @property integer $provinces_id
- * @property integer $districts_id
- * @property integer $villages_id
  * @property integer $location_id
  *
- * @property \app\models\Districts $districts
- * @property \app\models\LocationBusines $location
- * @property \app\models\Provinces $provinces
- * @property \app\models\Villages $villages
- * @property \app\models\Photo[] $photos
+ * @property \app\models\Location $location
  * @property string $aliasModel
  */
 abstract class LocationDetails extends \yii\db\ActiveRecord
@@ -45,12 +38,10 @@ abstract class LocationDetails extends \yii\db\ActiveRecord
     {
         return [
             [['details'], 'string'],
-            [['provinces_id', 'districts_id', 'villages_id', 'location_id'], 'integer'],
+            [['location_id'], 'required'],
+            [['location_id'], 'integer'],
             [['phone', 'email'], 'string', 'max' => 255],
-            [['districts_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Districts::className(), 'targetAttribute' => ['districts_id' => 'id']],
-            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\LocationBusines::className(), 'targetAttribute' => ['location_id' => 'id']],
-            [['provinces_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Provinces::className(), 'targetAttribute' => ['provinces_id' => 'id']],
-            [['villages_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Villages::className(), 'targetAttribute' => ['villages_id' => 'id']]
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Location::className(), 'targetAttribute' => ['location_id' => 'id']]
         ];
     }
 
@@ -64,9 +55,6 @@ abstract class LocationDetails extends \yii\db\ActiveRecord
             'phone' => 'Phone',
             'email' => 'Email',
             'details' => 'Details',
-            'provinces_id' => 'Provinces ID',
-            'districts_id' => 'Districts ID',
-            'villages_id' => 'Villages ID',
             'location_id' => 'Location ID',
         ];
     }
@@ -74,41 +62,9 @@ abstract class LocationDetails extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDistricts()
-    {
-        return $this->hasOne(\app\models\Districts::className(), ['id' => 'districts_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getLocation()
     {
-        return $this->hasOne(\app\models\LocationBusines::className(), ['id' => 'location_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getProvinces()
-    {
-        return $this->hasOne(\app\models\Provinces::className(), ['id' => 'provinces_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getVillages()
-    {
-        return $this->hasOne(\app\models\Villages::className(), ['id' => 'villages_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPhotos()
-    {
-        return $this->hasMany(\app\models\Photo::className(), ['location_details_id' => 'id']);
+        return $this->hasOne(\app\models\Location::className(), ['id' => 'location_id']);
     }
 
 

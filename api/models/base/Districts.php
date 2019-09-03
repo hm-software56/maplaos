@@ -13,12 +13,12 @@ use Yii;
  * @property string $dis_code
  * @property string $dis_name
  * @property string $dis_name_la
- * @property double $latitute
- * @property double $longtitute
+ * @property double $latitude
+ * @property double $longitude
  * @property integer $provinces_id
  *
  * @property \app\models\Provinces $provinces
- * @property \app\models\LocationDetails[] $locationDetails
+ * @property \app\models\Location[] $locations
  * @property \app\models\Polygon[] $polygons
  * @property \app\models\Villages[] $villages
  * @property string $aliasModel
@@ -42,8 +42,8 @@ abstract class Districts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['latitute', 'longtitute', 'provinces_id'], 'required'],
-            [['latitute', 'longtitute'], 'number'],
+            [['latitude', 'longitude', 'provinces_id'], 'required'],
+            [['latitude', 'longitude'], 'number'],
             [['provinces_id'], 'integer'],
             [['dis_code'], 'string', 'max' => 45],
             [['dis_name', 'dis_name_la'], 'string', 'max' => 255],
@@ -61,8 +61,8 @@ abstract class Districts extends \yii\db\ActiveRecord
             'dis_code' => 'Dis Code',
             'dis_name' => 'Dis Name',
             'dis_name_la' => 'Dis Name La',
-            'latitute' => 'Latitute',
-            'longtitute' => 'Longtitute',
+            'latitude' => 'Latitude',
+            'longitude' => 'Longitude',
             'provinces_id' => 'Provinces ID',
         ];
     }
@@ -78,9 +78,9 @@ abstract class Districts extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocationDetails()
+    public function getLocations()
     {
-        return $this->hasMany(\app\models\LocationDetails::className(), ['districts_id' => 'id']);
+        return $this->hasMany(\app\models\Location::className(), ['districts_id' => 'id']);
     }
 
     /**

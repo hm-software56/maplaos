@@ -12,8 +12,9 @@ use Yii;
  * @property integer $id
  * @property string $photo
  * @property integer $location_details_id
+ * @property integer $location_id
  *
- * @property \app\models\LocationDetails $locationDetails
+ * @property \app\models\Location $location
  * @property string $aliasModel
  */
 abstract class Photo extends \yii\db\ActiveRecord
@@ -35,10 +36,10 @@ abstract class Photo extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['photo', 'location_details_id'], 'required'],
+            [['photo', 'location_details_id', 'location_id'], 'required'],
             [['photo'], 'string'],
-            [['location_details_id'], 'integer'],
-            [['location_details_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\LocationDetails::className(), 'targetAttribute' => ['location_details_id' => 'id']]
+            [['location_details_id', 'location_id'], 'integer'],
+            [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Location::className(), 'targetAttribute' => ['location_id' => 'id']]
         ];
     }
 
@@ -51,15 +52,16 @@ abstract class Photo extends \yii\db\ActiveRecord
             'id' => 'ID',
             'photo' => 'Photo',
             'location_details_id' => 'Location Details ID',
+            'location_id' => 'Location ID',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocationDetails()
+    public function getLocation()
     {
-        return $this->hasOne(\app\models\LocationDetails::className(), ['id' => 'location_details_id']);
+        return $this->hasOne(\app\models\Location::className(), ['id' => 'location_id']);
     }
 
 

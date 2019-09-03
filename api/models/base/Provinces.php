@@ -13,11 +13,11 @@ use Yii;
  * @property string $pro_code
  * @property string $pro_name
  * @property string $pro_name_la
- * @property double $latitute
- * @property double $longtitute
+ * @property double $latitude
+ * @property double $longitude
  *
  * @property \app\models\Districts[] $districts
- * @property \app\models\LocationDetails[] $locationDetails
+ * @property \app\models\Location[] $locations
  * @property \app\models\Polygon[] $polygons
  * @property \app\models\Villages[] $villages
  * @property string $aliasModel
@@ -41,12 +41,12 @@ abstract class Provinces extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['latitute', 'longtitute'], 'required'],
-            [['latitute', 'longtitute'], 'number'],
+            [['latitude', 'longitude'], 'required'],
+            [['latitude', 'longitude'], 'number'],
             [['pro_code'], 'string', 'max' => 45],
             [['pro_name', 'pro_name_la'], 'string', 'max' => 255],
-            [['latitute'], 'unique'],
-            [['longtitute'], 'unique']
+            [['latitude'], 'unique'],
+            [['longitude'], 'unique']
         ];
     }
 
@@ -60,8 +60,8 @@ abstract class Provinces extends \yii\db\ActiveRecord
             'pro_code' => 'Pro Code',
             'pro_name' => 'Pro Name',
             'pro_name_la' => 'Pro Name La',
-            'latitute' => 'Latitute',
-            'longtitute' => 'Longtitute',
+            'latitude' => 'Latitude',
+            'longitude' => 'Longitude',
         ];
     }
 
@@ -76,9 +76,9 @@ abstract class Provinces extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocationDetails()
+    public function getLocations()
     {
-        return $this->hasMany(\app\models\LocationDetails::className(), ['provinces_id' => 'id']);
+        return $this->hasMany(\app\models\Location::className(), ['provinces_id' => 'id']);
     }
 
     /**

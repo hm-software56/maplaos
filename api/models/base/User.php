@@ -9,11 +9,15 @@ use Yii;
 /**
  * This is the base-model class for table "user".
  *
- * @property integer $iduser
+ * @property integer $id
  * @property string $username
  * @property string $password
  * @property integer $status
  * @property string $type
+ * @property integer $profile_id
+ *
+ * @property \app\models\Location[] $locations
+ * @property \app\models\Profile $profile
  * @property string $aliasModel
  */
 abstract class User extends \yii\db\ActiveRecord
@@ -35,9 +39,10 @@ abstract class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['username', 'password', 'type'], 'required'],
-            [['status'], 'integer'],
-            [['username', 'password', 'type'], 'string', 'max' => 255]
+            [['username', 'password', 'type', 'profile_id'], 'required'],
+            [['status', 'profile_id'], 'integer'],
+            [['username', 'password', 'type'], 'string', 'max' => 255],
+            [['profile_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Profile::className(), 'targetAttribute' => ['profile_id' => 'id']]
         ];
     }
 
@@ -47,12 +52,29 @@ abstract class User extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'iduser' => 'Iduser',
+            'id' => 'ID',
             'username' => 'Username',
             'password' => 'Password',
             'status' => 'Status',
             'type' => 'Type',
+            'profile_id' => 'Profile ID',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocations()
+    {
+        return $this->hasMany(\app\models\Location::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProfile()
+    {
+        return $this->hasOne(\app\models\Profile::className(), ['id' => 'profile_id']);
     }
 
 

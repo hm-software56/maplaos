@@ -5,7 +5,6 @@ import "package:flutter/material.dart";
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:latlong/latlong.dart';
 
 class Locationimg extends StatefulWidget {
   var location_id;
@@ -22,11 +21,6 @@ class _LocationimgState extends State<Locationimg> {
   List img = [];
   bool isloading = true;
   void loadimg() async {
-    final Distance distance = new Distance();
-    // km = 423
-     var km = distance.as(LengthUnit.Kilometer,
-     new LatLng(18.0070358,102.5570239),new LatLng(18.041553,102.578755));
-     print(km);
     final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
         host: setting.host,
         port: setting.port,

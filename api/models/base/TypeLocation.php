@@ -13,7 +13,7 @@ use Yii;
  * @property string $name
  * @property string $name_la
  *
- * @property \app\models\LocationBusines[] $locationBusines
+ * @property \app\models\Location[] $locations
  * @property string $aliasModel
  */
 abstract class TypeLocation extends \yii\db\ActiveRecord
@@ -55,9 +55,9 @@ abstract class TypeLocation extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocationBusines()
+    public function getLocations()
     {
-        return $this->hasMany(\app\models\LocationBusines::className(), ['type_location_id' => 'id']);
+        return $this->hasMany(\app\models\Location::className(), ['type_location_id' => 'id']);
     }
 
 

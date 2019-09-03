@@ -13,12 +13,12 @@ use Yii;
  * @property string $vill_code
  * @property string $vill_name
  * @property string $vill_name_la
- * @property double $latitute
- * @property double $longtitute
+ * @property double $latitude
+ * @property double $longitude
  * @property integer $districts_id
  * @property integer $provinces_id
  *
- * @property \app\models\LocationDetails[] $locationDetails
+ * @property \app\models\Location[] $locations
  * @property \app\models\Districts $districts
  * @property \app\models\Provinces $provinces
  * @property string $aliasModel
@@ -42,8 +42,8 @@ abstract class Villages extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['latitute', 'longtitute', 'districts_id', 'provinces_id'], 'required'],
-            [['latitute', 'longtitute'], 'number'],
+            [['latitude', 'longitude', 'districts_id', 'provinces_id'], 'required'],
+            [['latitude', 'longitude'], 'number'],
             [['districts_id', 'provinces_id'], 'integer'],
             [['vill_code', 'vill_name', 'vill_name_la'], 'string', 'max' => 255],
             [['districts_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Districts::className(), 'targetAttribute' => ['districts_id' => 'id']],
@@ -61,8 +61,8 @@ abstract class Villages extends \yii\db\ActiveRecord
             'vill_code' => 'Vill Code',
             'vill_name' => 'Vill Name',
             'vill_name_la' => 'Vill Name La',
-            'latitute' => 'Latitute',
-            'longtitute' => 'Longtitute',
+            'latitude' => 'Latitude',
+            'longitude' => 'Longitude',
             'districts_id' => 'Districts ID',
             'provinces_id' => 'Provinces ID',
         ];
@@ -71,9 +71,9 @@ abstract class Villages extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLocationDetails()
+    public function getLocations()
     {
-        return $this->hasMany(\app\models\LocationDetails::className(), ['villages_id' => 'id']);
+        return $this->hasMany(\app\models\Location::className(), ['villages_id' => 'id']);
     }
 
     /**

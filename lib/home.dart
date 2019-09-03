@@ -175,8 +175,9 @@ class _HomeState extends State<Home> {
       var currentLocation_longitude) async {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
+            borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(20.0),
+                topRight: const Radius.circular(20.0))),
         backgroundColor: Colors.white,
         context: context,
         builder: (Builder) {
