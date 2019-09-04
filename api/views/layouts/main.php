@@ -74,19 +74,7 @@ AppAsset::register($this);
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
 </footer>
-<script>
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGF4aW9uZ2luZm8iLCJhIjoiY2prdXVucWZ3MGIzYzNrcnJwMWw0eTRueSJ9.4Ow9sGdMnMG3cVPkHuDphA';
-var map = new mapboxgl.Map({
-container: 'map',
-style: 'mapbox://styles/mapbox/streets-v11',
-center: [-79.4512, 43.6568],
-zoom: 13
-});
- 
-map.addControl(new MapboxDirections({
-accessToken: mapboxgl.accessToken
-}), 'top-left');
-</script>
+
 <?php $this->endBody() ?>
 </body>
 </html>
