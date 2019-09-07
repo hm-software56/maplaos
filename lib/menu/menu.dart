@@ -1,8 +1,15 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:maplaos/menu/menu_login.dart';
 import 'package:maplaos/menu/menu_sigined.dart';
+import 'package:maplaos/model/alert.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mysql1/mysql1.dart' as mysql;
 
 class Menu extends StatefulWidget {
   @override
@@ -10,25 +17,188 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
+  Dio dio = new Dio();
   Setting setting = Setting();
-  var photo_bg;
-  var photo_profile;
   bool islogin = false;
   void checklogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int userId = prefs.getInt('userId');
     if (userId != null) {
       setState(() {
+        userID = userId;
         islogin = true;
       });
     }
   }
+
+  void logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('userId');
+    Navigator.of(context).pop();
+  }
+
+/* ------------------------ Upload Ingage profile -------------------------*/
+  File _image;
+  var photo_profile;
+  bool isloadimg = false;
+  File _imageBg;
+  bool isloadimgBg = false;
+  var photo_bg;
+  int userID;
+  Future getImageProfile(var type) async {
+    var  conn;
+    try {
+      conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+          host: setting.host,
+          port: setting.port,
+          user: setting.user,
+          password: setting.password,
+          db: setting.db,
+          timeout: Duration(seconds:5)));
+    } on Exception {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Alert();
+          });
+    }
+    var imageFile = (type == 'camera')
+        ? await ImagePicker.pickImage(source: ImageSource.camera)
+        : await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (imageFile != null) {
+      setState(() {
+        _image = imageFile;
+        isloadimg = true;
+      });
+      /*============ Drop Images =================*/
+      File croppedFile = await ImageCropper.cropImage(
+          sourcePath: imageFile.path,
+          ratioX: 1.0,
+          ratioY: 1.0,
+          toolbarTitle: 'Crop photo',
+          toolbarColor: Colors.red);
+      if (croppedFile != null) {
+        imageFile = croppedFile;
+        /*============ Send Images to API Save =================*/
+        FormData formData = new FormData.from({
+          "name": "profile_img",
+          'edit': true,
+          'userid': userID,
+          "upfile": new UploadFileInfo(imageFile, "upload1.jpg")
+        });
+        try {
+          var response =
+              await dio.post("${setting.apiUrl}api/uplaodfile", data: formData);
+          if (response.statusCode == 200) {
+            var userlogin = await conn.query('select * from user where id=?',[1]);
+            var profile_id;
+            for(var user in userlogin){
+              profile_id=user['profile_id'];
+            }
+            var results = await conn.query('UPDATE profile SET photo =? where id = ?', [response.data.toString(),profile_id]);
+            setState(() {
+              isloadimg = false;
+              photo_profile = response.data;
+            });
+          } else {
+            print('Error upload image');
+          }
+        } on DioError catch (e) {
+          print('Errors upload');
+        }
+      } else {
+        setState(() {
+          if (photo_profile.photo == null) {
+            _image = null;
+          }
+          isloadimg = false;
+        });
+      }
+    }
+  }
+
+/*====================== Uplaod image profile Bg ========================*/
+
+  Future getImageBgProfile(var type) async {
+    var  conn;
+    try {
+      conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+          host: setting.host,
+          port: setting.port,
+          user: setting.user,
+          password: setting.password,
+          db: setting.db,
+          timeout: Duration(seconds:5)));
+    } on Exception {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Alert();
+          });
+    }
+    var imageBgFile = (type == 'camera')
+        ? await ImagePicker.pickImage(source: ImageSource.camera)
+        : await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (imageBgFile != null) {
+      setState(() {
+        _imageBg = imageBgFile;
+        isloadimgBg = true;
+      });
+      /*============ Drop Images =================*/
+      File croppedFile = await ImageCropper.cropImage(
+          sourcePath: imageBgFile.path,
+          ratioX: 1.8,
+          ratioY: 1.0,
+          toolbarTitle: 'Crop photo',
+          toolbarColor: Colors.red);
+      if (croppedFile != null) {
+        imageBgFile = croppedFile;
+        /*============ Send Images to API Save =================*/
+        Dio dio = new Dio();
+        FormData formData = new FormData.from({
+          "name": "profileBg_img",
+          'edit': true,
+          'userid': userID,
+          "upfile": new UploadFileInfo(imageBgFile, "upload1.jpg")
+        });
+        try {
+          var response =
+              await dio.post("${setting.apiUrl}api/uplaodfile", data: formData);
+          if (response.statusCode == 200) {
+            var userlogin = await conn.query('select * from user where id=?',[1]);
+            var profile_id;
+            for(var user in userlogin){
+              profile_id=user['profile_id'];
+            }
+            var results = await conn.query('UPDATE profile SET bg =? where id = ?', [response.data.toString(),profile_id]);
+            setState(() {
+              isloadimgBg = false;
+              photo_bg = response.data;
+            });
+          } else {
+            print('Error upload image');
+          }
+        } on DioError catch (e) {
+          print('Errors upload bg');
+        }
+      } else {
+        setState(() {
+          if (photo_bg == null) {
+            _imageBg = null;
+          }
+          isloadimgBg = false;
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     checklogin();
   }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -59,7 +229,7 @@ class _MenuState extends State<Menu> {
                                 color: Colors.red,
                               ),
                               onPressed: () {
-                                //getImageBgProfile('gallery');
+                                getImageBgProfile('gallery');
 
                                 Navigator.of(context).pop();
                               },
@@ -74,7 +244,7 @@ class _MenuState extends State<Menu> {
                                   color: Colors.red,
                                 ),
                                 onPressed: () {
-                                  // getImageBgProfile('camera');
+                                  getImageBgProfile('camera');
 
                                   Navigator.of(context).pop();
                                 },
@@ -117,7 +287,7 @@ class _MenuState extends State<Menu> {
                                     color: Colors.blue,
                                   ),
                                   onPressed: () {
-                                    //getImageProfile('gallery');
+                                    getImageProfile('gallery');
 
                                     Navigator.of(context).pop();
                                   },
@@ -132,7 +302,7 @@ class _MenuState extends State<Menu> {
                                       color: Colors.blue,
                                     ),
                                     onPressed: () {
-                                      // getImageProfile('camera');
+                                      getImageProfile('camera');
 
                                       Navigator.of(context).pop();
                                     },
@@ -161,7 +331,7 @@ class _MenuState extends State<Menu> {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          islogin?MenuSigined():MenuLogin(),
+          islogin ? MenuSigined() : MenuLogin(),
           ListTile(
             leading: Icon(
               Icons.assessment,
@@ -207,7 +377,7 @@ class _MenuState extends State<Menu> {
               ),
             ),
             onTap: () {
-              //logOut();
+              logout();
             },
           ),
         ],

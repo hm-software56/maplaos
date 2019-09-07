@@ -26,10 +26,13 @@ class _MenuLoginState extends State<MenuLogin> {
           ),
           trailing: Icon(Icons.keyboard_arrow_right),
           onTap: () {
+            Navigator.of(context).pop();
             Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) =>ModelLogin()),
-            );
+                context,
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) => ModelLogin(),
+                ));
           },
         ),
       ],

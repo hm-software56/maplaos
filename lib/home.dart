@@ -298,16 +298,28 @@ class _HomeState extends State<Home> {
   }
 
 /*===================== Search =======================*/
-  static final GlobalKey<ScaffoldState> scaffoldKey =
-      GlobalKey<ScaffoldState>();
-  GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
+  static final GlobalKey<ScaffoldState> scaffoldKey =GlobalKey<ScaffoldState>();
+  static final GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
   TextEditingController _searchQuery;
   bool _isSearching = false;
   String searchQuery = "";
   List<String> list_autocomplete = [];
   void autocomplete() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    list_autocomplete = prefs.getStringList('list_autocomplete');
+    final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+          host: setting.host,
+          port: setting.port,
+          user: setting.user,
+          password: setting.password,
+          db: setting.db,
+          timeout:Duration(seconds: 8)
+          ));
+      var results = await conn.query('select * from location_search');
+      for (var re in results) {
+        list_autocomplete.add(re['name']);
+      }
+    /*SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('list_autocomplete');
+    list_autocomplete = prefs.getStringList('list_autocomplete');*/
   }
 
   void _startSearch() {

@@ -1,6 +1,3 @@
-import "package:flutter/material.dart";
-import 'package:mysql1/mysql1.dart';
-
 class Setting {
   var apiUrl = "http://192.168.43.55:8080/index.php?r=";
   var urlimg = "http://192.168.43.55:8080/images";

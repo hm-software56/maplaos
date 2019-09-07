@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:maplaos/home.dart';
-import 'package:maplaos/main.dart';
 import 'package:maplaos/model/alert.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:rich_alert/rich_alert.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -25,14 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
           user: setting.user,
           password: setting.password,
           db: setting.db,
-          timeout:Duration(seconds: 8)
+          timeout:Duration(seconds: 3)
           ));
-      var results = await conn.query('select * from location_search');
+     /* var results = await conn.query('select * from location_search');
       for (var re in results) {
         list_autocomplete.add(re['name']);
       }
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setStringList('list_autocomplete', list_autocomplete);
+      prefs.remove('list_autocomplete');
+     prefs.setStringList('list_autocomplete', list_autocomplete);*/
     } on Exception {
       setState(() {
        connected=false; 
@@ -55,10 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget build(BuildContext context) {
     return SplashScreen(
-            seconds: 15,
+            seconds: 8,
             navigateAfterSeconds: connected?Home():'',
             title: new Text(
-              'ຍີມ​ດີ​ທ່ຽວເມືອງລາວ',
+              'ຍີ​ນດີ​ທ່ຽວເມືອງລາວ',
               style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
             ),
 

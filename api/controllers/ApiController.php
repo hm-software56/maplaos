@@ -10,6 +10,9 @@ use yii\db\Query;
 use app\models\Dt;
 use app\models\Districts;
 use app\models\Photo;
+use Imagine\Image\Box;
+use yii\imagine\Image;
+use yii\web\UploadedFile;
 
 class ApiController extends \yii\web\Controller
 {
@@ -106,6 +109,35 @@ class ApiController extends \yii\web\Controller
         }
         \Yii::$app->response->format=Response::FORMAT_JSON;
             return $photos;
+    }
+    public function actionUplaodfile()
+    {
+        $uploads = UploadedFile::getInstancesByName("upfile");
+        if (empty($uploads)) {
+            return "Must upload at least 1 file in upfile form-data POST";
+        }
+
+        // $uploads now contains 1 or more UploadedFile instances
+        $savedfiles = null;
+        foreach ($uploads as $file) {
+            $realFileName = rand(). time() . '.' . $file->extension;
+            $path = \Yii::$app->basePath . '/web/images/' . $realFileName; //Generate your save file path here;
+            if ($file->saveAs($path)) {
+                $savedfiles = $realFileName;
+                $imagine = Image::getImagine();
+                $image = $imagine->open(\Yii::$app->basePath . '/web/images/' . $savedfiles);
+                if(isset($_POST['name']) && ($_POST['name']=="profile_img" || $_POST['name']=="profileBg_img"))
+                {
+                    $image->save(\Yii::$app->basePath . '/web/images/small/' . $savedfiles, ['quality' => 60]);
+                }
+                
+            } else {
+                $savedfiles = 'Error save file';
+            } //Your uploaded file is saved, you can process it further from here
+        }
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        return $savedfiles;
+
     }
 }
 

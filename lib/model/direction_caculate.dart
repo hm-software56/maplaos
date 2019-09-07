@@ -26,8 +26,8 @@ class _DirectionCaculateState extends State<DirectionCaculate> {
   var sumary_minuts_hour = "​​unkown";
   bool isloading = true;
   void direction() async {
-    var clong=102.610895; //use for test
-    var clat=17.966028; //use for test
+   // var clong=102.610895; //use for test. is use for real just commennt this line
+   //var clat=17.966028; //use for test. is use for real just commennt this line
     try {
       Response response = await Dio(BaseOptions(
         connectTimeout: 3000,

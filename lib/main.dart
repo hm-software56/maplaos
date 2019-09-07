@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:maplaos/home.dart';
 import 'package:maplaos/homescreen.dart';
 import 'package:splashscreen/splashscreen.dart';
@@ -16,7 +16,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home:HomeScreen(),
+      routes: <String, WidgetBuilder>{
+        '/home': (BuildContext context) => Home()
+      },
+      home: HomeScreen(),
     );
   }
 }
