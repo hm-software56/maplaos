@@ -126,16 +126,12 @@ class ApiController extends \yii\web\Controller
                 $savedfiles = $realFileName;
                 $imagine = Image::getImagine();
                 $image = $imagine->open(\Yii::$app->basePath . '/web/images/' . $savedfiles);
-                if(isset($_POST['name']) && ($_POST['name']=="profile_img" || $_POST['name']=="profileBg_img"))
-                {
-                    $image->save(\Yii::$app->basePath . '/web/images/small/' . $savedfiles, ['quality' => 60]);
-                }
                 
             } else {
                 $savedfiles = 'Error save file';
             } //Your uploaded file is saved, you can process it further from here
         }
-        \Yii::$app->response->format = Response::FORMAT_JSON;
+        //\Yii::$app->response->format = Response::FORMAT_JSON;
         return $savedfiles;
 
     }

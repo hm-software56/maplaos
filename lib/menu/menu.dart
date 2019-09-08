@@ -20,10 +20,42 @@ class _MenuState extends State<Menu> {
   Dio dio = new Dio();
   Setting setting = Setting();
   bool islogin = false;
+  String first_name;
+  String last_name;
   void checklogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int userId = prefs.getInt('userId');
     if (userId != null) {
+      var conn;
+      try {
+        conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+            host: setting.host,
+            port: setting.port,
+            user: setting.user,
+            password: setting.password,
+            db: setting.db,
+            timeout: Duration(seconds: 5)));
+            var userlogin =
+                await conn.query('select * from user where id=?', [userId]);
+            for (var user in userlogin) {
+              var profiles =await conn.query('select * from profile where id=?', [user['profile_id']]);
+              for (var profile in profiles) {
+                setState(() {
+                  photo_profile=profile['photo'];
+                  photo_bg=profile['bg'];
+                  first_name=profile['first_name'];
+                  last_name=profile['last_name'];
+                });
+              }
+            }
+      } on Exception {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Alert();
+            });
+      }
+      
       setState(() {
         userID = userId;
         islogin = true;
@@ -46,7 +78,7 @@ class _MenuState extends State<Menu> {
   var photo_bg;
   int userID;
   Future getImageProfile(var type) async {
-    var  conn;
+    var conn;
     try {
       conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
           host: setting.host,
@@ -54,7 +86,7 @@ class _MenuState extends State<Menu> {
           user: setting.user,
           password: setting.password,
           db: setting.db,
-          timeout: Duration(seconds:5)));
+          timeout: Duration(seconds: 5)));
     } on Exception {
       showDialog(
           context: context,
@@ -90,12 +122,15 @@ class _MenuState extends State<Menu> {
           var response =
               await dio.post("${setting.apiUrl}api/uplaodfile", data: formData);
           if (response.statusCode == 200) {
-            var userlogin = await conn.query('select * from user where id=?',[1]);
+            var userlogin =
+                await conn.query('select * from user where id=?', [userID]);
             var profile_id;
-            for(var user in userlogin){
-              profile_id=user['profile_id'];
+            for (var user in userlogin) {
+              profile_id = user['profile_id'];
             }
-            var results = await conn.query('UPDATE profile SET photo =? where id = ?', [response.data.toString(),profile_id]);
+            var results = await conn.query(
+                'UPDATE profile SET photo =? where id = ?',
+                [response.data.toString(), profile_id]);
             setState(() {
               isloadimg = false;
               photo_profile = response.data;
@@ -120,7 +155,7 @@ class _MenuState extends State<Menu> {
 /*====================== Uplaod image profile Bg ========================*/
 
   Future getImageBgProfile(var type) async {
-    var  conn;
+    var conn;
     try {
       conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
           host: setting.host,
@@ -128,7 +163,7 @@ class _MenuState extends State<Menu> {
           user: setting.user,
           password: setting.password,
           db: setting.db,
-          timeout: Duration(seconds:5)));
+          timeout: Duration(seconds: 5)));
     } on Exception {
       showDialog(
           context: context,
@@ -165,12 +200,15 @@ class _MenuState extends State<Menu> {
           var response =
               await dio.post("${setting.apiUrl}api/uplaodfile", data: formData);
           if (response.statusCode == 200) {
-            var userlogin = await conn.query('select * from user where id=?',[1]);
+            var userlogin =
+                await conn.query('select * from user where id=?', [userID]);
             var profile_id;
-            for(var user in userlogin){
-              profile_id=user['profile_id'];
+            for (var user in userlogin) {
+              profile_id = user['profile_id'];
             }
-            var results = await conn.query('UPDATE profile SET bg =? where id = ?', [response.data.toString(),profile_id]);
+            var results = await conn.query(
+                'UPDATE profile SET bg =? where id = ?',
+                [response.data.toString(), profile_id]);
             setState(() {
               isloadimgBg = false;
               photo_bg = response.data;
