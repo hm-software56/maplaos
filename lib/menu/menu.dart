@@ -358,14 +358,14 @@ class _MenuState extends State<Menu> {
                       : NetworkImage('${setting.urlimg}/${photo_profile}'),
                 )),
             accountName: Text(
-              'Daxiong',
+              '$first_name',
               style: TextStyle(
                   fontSize: 25.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
             accountEmail: Text(
-              'SONGYANGCHENG',
+              '$last_name',
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -403,7 +403,7 @@ class _MenuState extends State<Menu> {
             onTap: () {},
           ),
           Divider(),
-          ListTile(
+          islogin?ListTile(
             trailing: Icon(
               Icons.settings_power,
               color: Colors.red,
@@ -417,7 +417,7 @@ class _MenuState extends State<Menu> {
             onTap: () {
               logout();
             },
-          ),
+          ):Text(''),
         ],
       ),
     );

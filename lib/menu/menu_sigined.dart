@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maplaos/model/model_profile.dart';
 class MenuSigined extends StatefulWidget {
   @override
   _MenuSiginedState createState() => _MenuSiginedState();
@@ -42,7 +43,13 @@ class _MenuSiginedState extends State<MenuSigined> {
             ),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () {
-              Navigator.of(context).pushNamed('/profile');
+               Navigator.of(context).pop();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) => ModelProfile(),
+                ));
             },
           ),
       ],
