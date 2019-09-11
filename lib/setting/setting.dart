@@ -1,7 +1,7 @@
 class Setting {
   static String hosturl = '192.168.100.13';
-  var apiUrl = "http://$hosturl:8080/index.php?r=";
-  var urlimg = "http://$hosturl:8080/images";
+  var apiUrl = "http://$hosturl:5000";
+  var urlimg1 = "http://$hosturl:8080";
   //var host = 'remotemysql.com';
   var host = hosturl;
   //var host = '10.11.13.71';

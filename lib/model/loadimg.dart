@@ -23,17 +23,17 @@ class _LoadimgState extends State<Loadimg> {
       Response response = await Dio(BaseOptions(
         connectTimeout: 5000,
         receiveTimeout: 5000,
-      )).get('${setting.apiUrl}/api/loadimg&id=${location_id}');
+      )).get('${setting.apiUrl}/loadimg/${location_id}');
       int i = 0;
       for (var data in response.data) {
         i = i + 1;
         if (i == 1) {
           setState(() {
-           photo1 = '${setting.urlimg}/${data}'; 
+           photo1 = '${setting.apiUrl}/showimg/${data}'; 
           });
         } else {
          setState(() {
-           photo2 = '${setting.urlimg}/${data}'; 
+           photo2 = '${setting.apiUrl}/showimg/${data}'; 
          });
         }
       }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:maplaos/home.dart';
 import 'package:maplaos/model/model_login.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
@@ -24,6 +25,8 @@ class _ModelProfileState extends State<ModelProfile> {
   var phone;
   var username;
   var password;
+  var profile_id;
+  var user_id;
   void loadprofile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int userId = prefs.getInt('userId');
@@ -43,6 +46,8 @@ class _ModelProfileState extends State<ModelProfile> {
         phone=profile['phone'];
         username=profile['username'];
         password=profile['password'];
+        profile_id=profile['profile_id'];
+        user_id=userId;
       });
     }
   }
@@ -59,22 +64,30 @@ class _ModelProfileState extends State<ModelProfile> {
         db: setting.db));
     var data = _fbKey.currentState.value;
     var saveprofile = await conn.query(
-        'insert into profile (first_name, last_name, email,phone) values (?, ?, ?, ?)',
-        [data['first_name'], data['last_name'], data['email'], data['phone']]);
-    if (saveprofile.insertId != null) {
+        'update profile set first_name=?, last_name=?, email=?, phone=? where id=?',
+        [data['first_name'], data['last_name'], data['email'], data['phone'],profile_id]);
+
+      var newpassword;
+      if(md5.convert(utf8.encode(data['password'])).toString()==password){
+        newpassword=password;
+      }else{
+        newpassword=md5.convert(utf8.encode(data['password'])).toString();
+      }
       var saveuser = await conn.query(
-          'insert into user (username, password, status,type,profile_id) values (?, ?, ?, ?, ?)',
+          'update user set username=?, password=?, status=?, type=?, profile_id=? where id=?',
           [
             data['username'],
-            md5.convert(utf8.encode(data['password'])).toString(),
+            newpassword,
             1,
             'user',
-            saveprofile.insertId
+            profile_id,
+            user_id
           ]);
-      if (saveuser.insertId != null) {
+
         setState(() {
           isloading = false;
         });
+        Navigator.of(context).pop();
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -91,18 +104,13 @@ class _ModelProfileState extends State<ModelProfile> {
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ModelLogin(),
-                          ));
+                      Navigator.of(context).pop();
                     },
                   )
                 ],
               );
             });
-      }
-    }
+    
   }
 @override
   void initState() {
@@ -116,7 +124,7 @@ class _ModelProfileState extends State<ModelProfile> {
       appBar: AppBar(
         title: Center(
             child: Text(
-          'ບັນ​ທືກ/Save',
+          'ໂປ​ຣ​ໄຟ​ຣ/Profile',
           textAlign: TextAlign.center,
         )),
       ),

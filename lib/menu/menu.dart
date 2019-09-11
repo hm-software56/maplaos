@@ -113,14 +113,11 @@ class _MenuState extends State<Menu> {
         imageFile = croppedFile;
         /*============ Send Images to API Save =================*/
         FormData formData = new FormData.from({
-          "name": "profile_img",
-          'edit': true,
-          'userid': userID,
-          "upfile": new UploadFileInfo(imageFile, "upload1.jpg")
+          "filepost": new UploadFileInfo(imageFile, "upload1.jpg")
         });
         try {
           var response =
-              await dio.post("${setting.apiUrl}api/uplaodfile", data: formData);
+              await dio.post("${setting.apiUrl}/uploadfile", data: formData, options: Options(method:'POST'));
           if (response.statusCode == 200) {
             var userlogin =
                 await conn.query('select * from user where id=?', [userID]);
@@ -191,14 +188,11 @@ class _MenuState extends State<Menu> {
         /*============ Send Images to API Save =================*/
         Dio dio = new Dio();
         FormData formData = new FormData.from({
-          "name": "profileBg_img",
-          'edit': true,
-          'userid': userID,
-          "upfile": new UploadFileInfo(imageBgFile, "upload1.jpg")
+          "filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")
         });
         try {
           var response =
-              await dio.post("${setting.apiUrl}api/uplaodfile", data: formData);
+              await dio.post("${setting.apiUrl}/uploadfile", data: formData, options: Options(method:'POST'));
           if (response.statusCode == 200) {
             var userlogin =
                 await conn.query('select * from user where id=?', [userID]);
@@ -298,7 +292,7 @@ class _MenuState extends State<Menu> {
               image: DecorationImage(
                   image: photo_bg == null
                       ? AssetImage('assets/bg.jpg')
-                      : NetworkImage('${setting.urlimg}/${photo_bg}'),
+                      : NetworkImage('${setting.apiUrl}/showimg/${photo_bg}'),
                   fit: BoxFit.fill),
             ),
             currentAccountPicture: GestureDetector(
@@ -355,7 +349,7 @@ class _MenuState extends State<Menu> {
                 child: CircleAvatar(
                   backgroundImage: photo_profile == null
                       ? AssetImage('assets/user.png')
-                      : NetworkImage('${setting.urlimg}/${photo_profile}'),
+                      : NetworkImage('${setting.apiUrl}/showimg/${photo_profile}'),
                 )),
             accountName: Text(
               '$first_name',

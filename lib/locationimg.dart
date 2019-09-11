@@ -66,7 +66,7 @@ class _LocationimgState extends State<Locationimg> {
             )
           : Swiper(
               itemBuilder: (BuildContext context, int index) {
-                return Image.network('${setting.urlimg}/${img[index]}',
+                return Image.network('${setting.apiUrl}/showimg/${img[index]}',
                   fit: BoxFit.fill,
                 );
               },

@@ -4,6 +4,7 @@ from datetime import datetime
 from app import app
 from flask import send_file, flash, request, redirect, url_for,jsonify
 from models.user import User
+from models.location import Location
 UPLOAD_FOLDER = 'images/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -21,10 +22,9 @@ def index():
 def uploadfile():
     if request.method == 'POST':
         # check if the post request has the file part
-        if 'file' not in request.files:
-            #return jsonify('error')
+        if 'filepost' not in request.files:
             return redirect(request.url)
-        file = request.files['file']
+        file = request.files['filepost']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
@@ -40,6 +40,11 @@ def uploadfile():
     else:
         return redirect(request.url)
         
+@app.route('/loadimg/<id>', methods=['GET'])
+def loadimg(id):
+    photo=Location.loadimg(id)
+    return photo
+
 @app.route('/showimg/<filename>', methods=['GET'])
 def showimg(filename):
     return send_file('images/'+filename, mimetype='image/jpg')
