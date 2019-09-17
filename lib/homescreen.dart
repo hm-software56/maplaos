@@ -4,7 +4,6 @@ import 'package:maplaos/model/alert.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -25,13 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
           db: setting.db,
           timeout:Duration(seconds: 3)
           ));
-     /* var results = await conn.query('select * from location_search');
-      for (var re in results) {
-        list_autocomplete.add(re['name']);
-      }
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.remove('list_autocomplete');
-     prefs.setStringList('list_autocomplete', list_autocomplete);*/
     } on Exception {
       setState(() {
        connected=false; 

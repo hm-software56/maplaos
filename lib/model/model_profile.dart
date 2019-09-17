@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:maplaos/home.dart';
-import 'package:maplaos/model/model_login.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:rich_alert/rich_alert.dart';
@@ -68,7 +66,7 @@ class _ModelProfileState extends State<ModelProfile> {
         [data['first_name'], data['last_name'], data['email'], data['phone'],profile_id]);
 
       var newpassword;
-      if(md5.convert(utf8.encode(data['password'])).toString()==password){
+      if(data['password'].toString()==password.toString()){
         newpassword=password;
       }else{
         newpassword=md5.convert(utf8.encode(data['password'])).toString();

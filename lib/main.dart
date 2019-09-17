@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maplaos/home.dart';
 import 'package:maplaos/homescreen.dart';
-import 'package:splashscreen/splashscreen.dart';
-import 'package:maplaos/province.dart';
 
 void main() => runApp(MyApp());
 

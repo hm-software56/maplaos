@@ -38,11 +38,7 @@ class _ModelLoginState extends State<ModelLogin> {
         if (md5.convert(utf8.encode(data['password'])).toString()==user['password'].toString()) {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setInt('userId', int.parse(user['id'].toString()));
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Home(),
-              ));
+          Navigator.of(context).pop(); 
         } else {
           setState(() {
             error =
@@ -66,11 +62,12 @@ class _ModelLoginState extends State<ModelLogin> {
         leading: new IconButton(
             icon: new Icon(Icons.close, color: Colors.white),
             onPressed: () {
-              Navigator.pushReplacement(
+              Navigator.of(context).pop(); 
+              /*Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => Home(),
-                  ));
+                  ));*/
             }),
         title: Center(
             child: Text(
@@ -171,7 +168,7 @@ class _ModelLoginState extends State<ModelLogin> {
                                 ),
                               )),
                           onTap: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ModelRegister(),

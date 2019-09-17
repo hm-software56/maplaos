@@ -8,7 +8,6 @@ import 'package:maplaos/menu/menu.dart';
 import 'package:maplaos/model/loadimg.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:geocoder/geocoder.dart';

@@ -5,6 +5,7 @@ from app import app
 from flask import send_file, flash, request, redirect, url_for,jsonify
 from models.user import User
 from models.location import Location
+
 UPLOAD_FOLDER = 'images/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -15,7 +16,7 @@ def allowed_file(filename):
            
 @app.route('/')
 def index():
-    listuser=User.listuser()
+    listuser=User().listuser()
     return listuser
 
 @app.route('/uploadfile', methods=['GET', 'POST'])
@@ -42,7 +43,7 @@ def uploadfile():
         
 @app.route('/loadimg/<id>', methods=['GET'])
 def loadimg(id):
-    photo=Location.loadimg(id)
+    photo=Location().loadimg(id)
     return photo
 
 @app.route('/showimg/<filename>', methods=['GET'])

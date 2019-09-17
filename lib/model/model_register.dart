@@ -63,9 +63,10 @@ class _ModelRegisterState extends State<ModelRegister> {
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(
+                      Navigator.of(context).pop(); 
+                      /*Navigator.pushReplacement(context, MaterialPageRoute(
                                   builder: (context) => ModelLogin(),
-                                ));
+                                ));*/
                     },
                   )
                 ],
