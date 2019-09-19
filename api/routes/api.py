@@ -1,12 +1,13 @@
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from app import app
+from main import app
 from flask import send_file, flash, request, redirect, url_for,jsonify
 from models.user import User
 from models.location import Location
 
-UPLOAD_FOLDER = 'images/'
+UPLOAD_FOLDER = '/home/cbr/daxiong/api/images/' # path uploading use in server 
+UPLOAD_FOLDER = '/images/' # path uploading use in server 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 

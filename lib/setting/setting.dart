@@ -1,5 +1,5 @@
 class Setting {
-  static String hosturl = '192.168.43.55';
+  static String hosturl = '183.182.107.122';
   var apiUrl = "http://$hosturl:5000";
   //var urlimg1 = "http://$hosturl:8080";
  
