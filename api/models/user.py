@@ -7,5 +7,6 @@ class User:
     def listuser(self):
         cur=conn.cursor()
         cur.execute("select * from user")
+        cur.close()
         rv = cur.fetchall()
         return  jsonify(rv)

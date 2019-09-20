@@ -1,20 +1,17 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
+import 'package:maplaos/model/direction_place.dart';
 import 'package:maplaos/model/loadimg.dart';
 import 'package:maplaos/setting/setting.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:geocoder/geocoder.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as location;
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-import 'package:dio/dio.dart';
 
 import 'model/direction_caculate.dart';
 
@@ -261,6 +258,16 @@ class _HomeState extends State<Home> {
                                 child: FlatButton(
                                   onPressed: () => {
                                     // openGoogleMap(latitude, longitude)
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          fullscreenDialog: true,
+                                          builder: (context) => DirectionPlace(
+                                              currentLocation_latitude,
+                                              currentLocation_longitude,
+                                              data["latitude"],
+                                              data["longitude"]),
+                                        ))
                                   },
                                   // color: Colors.white,
                                   padding: EdgeInsets.all(10.0),
@@ -297,7 +304,8 @@ class _HomeState extends State<Home> {
   }
 
 /*===================== Search =======================*/
-  static final GlobalKey<ScaffoldState> scaffoldKey =GlobalKey<ScaffoldState>();
+  static final GlobalKey<ScaffoldState> scaffoldKey =
+      GlobalKey<ScaffoldState>();
   static final GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
   TextEditingController _searchQuery;
   bool _isSearching = false;
@@ -305,17 +313,16 @@ class _HomeState extends State<Home> {
   List<String> list_autocomplete = [];
   void autocomplete() async {
     final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
-          host: setting.host,
-          port: setting.port,
-          user: setting.user,
-          password: setting.password,
-          db: setting.db,
-          timeout:Duration(seconds: 8)
-          ));
-      var results = await conn.query('select * from location_search');
-      for (var re in results) {
-        list_autocomplete.add(re['name']);
-      }
+        host: setting.host,
+        port: setting.port,
+        user: setting.user,
+        password: setting.password,
+        db: setting.db,
+        timeout: Duration(seconds: 8)));
+    var results = await conn.query('select * from location_search');
+    for (var re in results) {
+      list_autocomplete.add(re['name']);
+    }
     /*SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('list_autocomplete');
     list_autocomplete = prefs.getStringList('list_autocomplete');*/

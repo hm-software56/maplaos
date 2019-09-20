@@ -235,6 +235,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.1"
+  flutter_webview_plugin:
+    dependency: "direct main"
+    description:
+      name: flutter_webview_plugin
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.8"
   front_end:
     dependency: transitive
     description:

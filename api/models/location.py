@@ -8,6 +8,7 @@ class Location:
     def loadimg(self, id):
         cur=conn.cursor()
         cur.execute("select photo from photo where location_id=%s",(id,))
+        cur.close()
         rv = cur.fetchall()
         photos=[]
         for data in rv:
