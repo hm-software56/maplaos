@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,7 +13,7 @@ import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart' as location;
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'model/direction_caculate.dart';
 
 class Home extends StatefulWidget {
@@ -164,11 +165,25 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void savetracingvisitor(var data) async {
+    var now = new DateTime.now();
+    final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+        host: setting.host,
+        port: setting.port,
+        user: setting.user,
+        password: setting.password,
+        db: setting.db));
+    var save = await conn.query(
+        'insert into tracking_visitor (date, location_id) values (?, ?)',
+        [now.toString(), data['id']]);
+  }
+
   /*=============== get detail onclick marker  ===============*/
   GoogleMapController mapController;
 
   void showdetail(var data, var currentLocation_latitude,
       var currentLocation_longitude) async {
+    savetracingvisitor(data);
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
@@ -193,7 +208,9 @@ class _HomeState extends State<Home> {
                       //color: Colors.red,
                       child: Center(
                         child: Text(
-                          data['loc_name'] + '/' + data['loc_name_la'],
+                          Localizations.localeOf(context).languageCode == "en"
+                              ? data['loc_name'].toString()
+                              : data['loc_name_la'].toString(),
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),
@@ -223,36 +240,17 @@ class _HomeState extends State<Home> {
                                     // Replace with a Row for horizontal icon + text
                                     children: <Widget>[
                                       Icon(
-                                        Icons.image,
+                                        Icons.touch_app,
                                         color: Colors.red,
                                       ),
-                                      Text("Image​")
+                                      Text(AppLocalizations.of(context)
+                                          .tr("Subscribe"))
                                     ],
                                   ),
                                 ),
                               ),
                               Expanded(
-                                child: FlatButton(
-                                  onPressed: () => {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                Locationimg(data['id'])))
-                                  },
-                                  //color: Colors.white,
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Column(
-                                    // Replace with a Row for horizontal icon + text
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.important_devices,
-                                        color: Colors.red,
-                                      ),
-                                      Text("WEBSITE")
-                                    ],
-                                  ),
-                                ),
+                                child: Text(''),
                               ),
                               Expanded(
                                 child: FlatButton(
@@ -278,7 +276,8 @@ class _HomeState extends State<Home> {
                                         Icons.directions,
                                         color: Colors.red,
                                       ),
-                                      Text("GO")
+                                      Text(AppLocalizations.of(context)
+                                          .tr("Direction"))
                                     ],
                                   ),
                                 ),

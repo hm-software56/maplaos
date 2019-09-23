@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:maplaos/model/model_login.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 class MenuLogin extends StatefulWidget {
   @override
   _MenuLoginState createState() => _MenuLoginState();
@@ -14,10 +14,9 @@ class _MenuLoginState extends State<MenuLogin> {
         ListTile(
           leading: Icon(
             Icons.enhanced_encryption,
-            color: Colors.blue,
+            color: Colors.red,
           ),
-          title: Text(
-            '​ເຂົ້າ​ລະ​ບົບ',
+          title: Text(AppLocalizations.of(context).tr("Login"),
             style: TextStyle(fontSize: 20.0),
           ),
           subtitle: Text(

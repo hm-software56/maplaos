@@ -7,6 +7,7 @@ import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ModelLogin extends StatefulWidget {
   @override
@@ -42,7 +43,7 @@ class _ModelLoginState extends State<ModelLogin> {
         } else {
           setState(() {
             error =
-                "ຊື່ຫຼື​ລະ​ຫັດ​ເຂົ້າ​​ບໍ່​ຖືກ​ຕ້ອ​ງ/Username or password incorrect";
+                "Username or password incorrect";
             isloading = false;
           });
         }
@@ -50,7 +51,7 @@ class _ModelLoginState extends State<ModelLogin> {
     } else {
       setState(() {
         error =
-            "ຊື່ຫຼື​ລະ​ຫັດ​ເຂົ້າ​​ບໍ່​ຖືກ​ຕ້ອ​ງ/Username or password incorrect";
+            "Username or password incorrect";
         isloading = false;
       });
     }
@@ -70,8 +71,7 @@ class _ModelLoginState extends State<ModelLogin> {
                   ));*/
             }),
         title: Center(
-            child: Text(
-          'ເຂົ້າ​ລະ​ບົບ/Login',
+            child: Text(AppLocalizations.of(context).tr("Login"),
           textAlign: TextAlign.center,
         )),
       ),
@@ -93,7 +93,7 @@ class _ModelLoginState extends State<ModelLogin> {
                         FormBuilderTextField(
                           attribute: "username",
                           decoration:
-                              InputDecoration(labelText: "ຊື່ຜູ້ໃຊ້/Username"),
+                              InputDecoration(labelText:AppLocalizations.of(context).tr("Username")),
                           validators: [
                             FormBuilderValidators.required(),
                           ],
@@ -105,7 +105,7 @@ class _ModelLoginState extends State<ModelLogin> {
                           attribute: "password",
                           obscureText: true,
                           decoration: InputDecoration(
-                              labelText: "ລະ​ຫັດ​ຜ່ານ/Password"),
+                              labelText: AppLocalizations.of(context).tr("Password")),
                           validators: [
                             FormBuilderValidators.required(),
                           ],
@@ -120,7 +120,7 @@ class _ModelLoginState extends State<ModelLogin> {
                       ? Padding(
                           padding: EdgeInsets.all(5),
                         )
-                      : isloading ? Text('') : Text(error.toString(),style:TextStyle(fontSize: 11,color: Colors.red),),
+                      : isloading ? Text('') : Text(AppLocalizations.of(context).tr(error).toString(),style:TextStyle(fontSize: 11,color: Colors.red),),
                   Padding(
                     padding: EdgeInsets.all(5),
                   ),
@@ -136,8 +136,7 @@ class _ModelLoginState extends State<ModelLogin> {
                                   Icons.lock_open,
                                   color: Colors.white,
                                 ),
-                                label: Text(
-                                  'ເຂົ້າ​ລະ​ບົບ/Login',
+                                label: Text(AppLocalizations.of(context).tr("Login"),
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 key: null,
@@ -161,8 +160,7 @@ class _ModelLoginState extends State<ModelLogin> {
                           ),
                           title: Align(
                               alignment: Alignment(-2, 0),
-                              child: new Text(
-                                '​ລົງ​ທະ​ບຽນ',
+                              child: new Text(AppLocalizations.of(context).tr("Register"),
                                 style: TextStyle(
                                   color: Colors.black54,
                                 ),
@@ -180,8 +178,7 @@ class _ModelLoginState extends State<ModelLogin> {
                         child: ListTile(
                           title: Align(
                               alignment: Alignment(1, 0),
-                              child: new Text(
-                                'ລຶມ​ລະ​ຫັດ​ຜ່ານ',
+                              child: new Text(AppLocalizations.of(context).tr("Forget password"),
                                 textAlign: TextAlign.right,
                                 style: TextStyle(
                                   color: Colors.black54,

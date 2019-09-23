@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maplaos/model/model_profile.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 class MenuSigined extends StatefulWidget {
   @override
   _MenuSiginedState createState() => _MenuSiginedState();
@@ -13,10 +15,9 @@ class _MenuSiginedState extends State<MenuSigined> {
         ListTile(
             leading: Icon(
               Icons.store,
-              color: Colors.blue,
+              color: Colors.red,
             ),
-            title: Text(
-              '​ເອົາ​ສະ​ຖານ​ທີ່​ເຂົ້າ',
+            title: Text(AppLocalizations.of(context).tr("Add Location"),
               style: TextStyle(fontSize: 20.0),
             ),
             subtitle: Text(
@@ -31,14 +32,12 @@ class _MenuSiginedState extends State<MenuSigined> {
           ListTile(
             leading: Icon(
               Icons.account_circle,
-              color: Colors.blue,
+              color: Colors.red,
             ),
-            title: Text(
-              'ໂປ​ຣ​ໄຟ',
+            title: Text(AppLocalizations.of(context).tr("Profile"),
               style: TextStyle(fontSize: 20.0),
             ),
-            subtitle: Text(
-              'ຈັດ​ການໂປ​ຣ​ໄຟຂອງ​ຕົ້ນ​ເອງ',
+            subtitle: Text(AppLocalizations.of(context).tr("Manage Profile"),
               style: TextStyle(fontSize: 12.0),
             ),
             trailing: Icon(Icons.keyboard_arrow_right),

@@ -1,12 +1,13 @@
 from flask import jsonify
-from config import conn
+import config
 class Location:
     def __init__(self):
         self.name='Location'
         
         
     def loadimg(self, id):
-        cur=conn.cursor()
+        db=config.connect_db()
+        cur=db.cursor()
         cur.execute("select photo from photo where location_id=%s",(id,))
         cur.close()
         rv = cur.fetchall()

@@ -1,11 +1,12 @@
 from flask import jsonify
-from config import conn
+import config
 class User:
     def __init__(self):
         self.name="User"
         
     def listuser(self):
-        cur=conn.cursor()
+        db=config.connect_db()
+        cur=db.cursor()
         cur.execute("select * from user")
         cur.close()
         rv = cur.fetchall()
