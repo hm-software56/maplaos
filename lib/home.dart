@@ -15,6 +15,7 @@ import 'package:location/location.dart' as location;
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'model/direction_caculate.dart';
+import 'package:device_id/device_id.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -166,6 +167,7 @@ class _HomeState extends State<Home> {
   }
 
   void savetracingvisitor(var data) async {
+    String deviceid = await DeviceId.getID;
     var now = new DateTime.now();
     final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
         host: setting.host,
@@ -174,8 +176,8 @@ class _HomeState extends State<Home> {
         password: setting.password,
         db: setting.db));
     var save = await conn.query(
-        'insert into tracking_visitor (date, location_id) values (?, ?)',
-        [now.toString(), data['id']]);
+        'insert into tracking_visitor (date, location_id,device_id) values (?, ?,?)',
+        [now.toString(), data['id'], deviceid]);
   }
 
   /*=============== get detail onclick marker  ===============*/

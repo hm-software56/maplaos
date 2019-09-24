@@ -17,10 +17,9 @@ class _MenuLoginState extends State<MenuLogin> {
             color: Colors.red,
           ),
           title: Text(AppLocalizations.of(context).tr("Login"),
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(fontSize: 16.0),
           ),
-          subtitle: Text(
-            'Login',
+          subtitle: Text(AppLocalizations.of(context).tr("Login management your data"),
             style: TextStyle(fontSize: 12.0),
           ),
           trailing: Icon(Icons.keyboard_arrow_right),

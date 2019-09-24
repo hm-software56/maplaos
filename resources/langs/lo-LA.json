@@ -33,6 +33,9 @@
     "Password must contain 4 or more digits": "ລະ​ຫັດ​ຜ່ານ​ຕ້ອງ​ມີ 4 ໂຕ​ຂື້ນ​ໄປ",
     "Password confirm": "ຢືນ​ຢັນ​ລະ​ຫັດ",
     "Password confirm is incorect": "ຢືນ​ຢັນ​ລະ​ຫັດ​ບໍ່​ຖືກ​ຕ້ອງ",
-    "Submit": "ສົ່ງ"
-
+    "Submit": "ສົ່ງ",
+    "Explain about us": "ອະ​ທີ​ບາຍ​ກ່ຽວ​ກັບ​ພວກ​ເຮົາ",
+    "How to use this app": "ວິທີການ ນຳ ໃຊ້ແອັບນີ້",
+    "Login management your data": "ເຂົ້າສູ່ລະບົບຈັດການຂໍ້ມູນຂອງທ່ານ",
+    "Manage location": "ບໍ​ລິ​ຫານ​ສະ​ຖານທີ່​ທ່ອງ​ທ່ຽວ"
 }

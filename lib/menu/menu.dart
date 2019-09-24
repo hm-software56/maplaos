@@ -375,9 +375,9 @@ class _MenuState extends State<Menu> {
                 color: Colors.red,
               ),
               title: Text(AppLocalizations.of(context).tr("How to Use"),
-                style: TextStyle(fontSize: 20.0),
+                style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Text(AppLocalizations.of(context).tr("​How to use"),
+              subtitle: Text(AppLocalizations.of(context).tr("​How to use this app"),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: Icon(Icons.keyboard_arrow_right),
@@ -396,10 +396,9 @@ class _MenuState extends State<Menu> {
                 color: Colors.red,
               ),
               title: Text(AppLocalizations.of(context).tr("About Us"),
-                style: TextStyle(fontSize: 20.0),
+                style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Text(
-                'about us​',
+              subtitle: Text(AppLocalizations.of(context).tr("Explain about us"),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: Icon(Icons.keyboard_arrow_right),
@@ -418,7 +417,7 @@ class _MenuState extends State<Menu> {
                 color: Colors.red,
               ),
               title: Text(AppLocalizations.of(context).tr('Switch Language'),
-                style: TextStyle(fontSize: 20.0),
+                style: TextStyle(fontSize: 16.0),
               ),
               subtitle: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -433,8 +432,8 @@ class _MenuState extends State<Menu> {
                       },
                       child: Image.asset(
                         'assets/la.png', // On click should redirect to an URL
-                        width: 20.0,
-                        height: 20.0,
+                        width: 10.0,
+                        height: 10.0,
                       ),
                     ),
                     ),
@@ -447,8 +446,8 @@ class _MenuState extends State<Menu> {
                       },
                       child: Image.asset(
                         'assets/en.png', // On click should redirect to an URL
-                        width: 20.0,
-                        height: 20.0,
+                        width: 10.0,
+                        height: 10.0,
                       ),
                     ),
                     )
@@ -466,7 +465,7 @@ class _MenuState extends State<Menu> {
                     ),
                     title: Text(AppLocalizations.of(context).tr("Logout"),
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 16.0,
                       ),
                     ),
                     onTap: () {
