@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:maplaos/model/add_location.dart';
+import 'package:maplaos/model/model_listlocation.dart';
 import 'package:maplaos/model/model_profile.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -25,7 +27,12 @@ class _MenuSiginedState extends State<MenuSigined> {
             ),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () {
-              Navigator.of(context).pushNamed('/listhouseuser');
+              Navigator.of(context).pop();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ModelListLocation(),
+                ));
             },
           ),
           ListTile(

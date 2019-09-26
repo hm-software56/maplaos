@@ -15,3 +15,14 @@ class Location:
         for data in rv:
             photos.append(data[0])
         return  jsonify(photos)
+    def textsearch(self):
+        db=config.connect_db()
+        cur=db.cursor()
+        location_name=[]
+        cur.execute("select DISTINCT(name) from location_search")
+        for location in cur.fetchall():
+            location_name.append(location[0])
+        cur.execute("update location_searchs set search_text=%s",(str(location_name),))
+        db.commit()
+        cur.close()
+        return jsonify('true')

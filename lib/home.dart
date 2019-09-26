@@ -320,13 +320,13 @@ class _HomeState extends State<Home> {
         password: setting.password,
         db: setting.db,
         timeout: Duration(seconds: 8)));
-    var results = await conn.query('select * from location_search');
+    var results = await conn.query('select * from location_searchs');
     for (var re in results) {
-      list_autocomplete.add(re['name']);
-    }
-    /*SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('list_autocomplete');
-    list_autocomplete = prefs.getStringList('list_autocomplete');*/
+      String name=re['search_text'].toString().replaceAll("', ", ';').replaceAll("['", '').replaceAll("]'", '').replaceAll("'", '');
+      setState(() {
+       list_autocomplete=name.split(";"); 
+      });
+     }
   }
 
   void _startSearch() {
@@ -437,6 +437,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget build(BuildContext context) {
+   // print(list_autocomplete);
     return Scaffold(
         //key: _scaffoldKey,
         drawer: menu,

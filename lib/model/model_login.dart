@@ -39,6 +39,7 @@ class _ModelLoginState extends State<ModelLogin> {
         if (md5.convert(utf8.encode(data['password'])).toString()==user['password'].toString()) {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setInt('userId', int.parse(user['id'].toString()));
+          prefs.setString('userType', user['type'].toString());
           Navigator.of(context).pop(); 
         } else {
           setState(() {

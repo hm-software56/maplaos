@@ -37,5 +37,21 @@
     "Explain about us": "ອະ​ທີ​ບາຍ​ກ່ຽວ​ກັບ​ພວກ​ເຮົາ",
     "How to use this app": "ວິທີການ ນຳ ໃຊ້ແອັບນີ້",
     "Login management your data": "ເຂົ້າສູ່ລະບົບຈັດການຂໍ້ມູນຂອງທ່ານ",
-    "Manage location": "ບໍ​ລິ​ຫານ​ສະ​ຖານທີ່​ທ່ອງ​ທ່ຽວ"
+    "Manage location": "ບໍ​ລິ​ຫານ​ສະ​ຖານທີ່​ທ່ອງ​ທ່ຽວ",
+    "Add location tour": "ເພື່ມ​ສະ​ຖານ​ທີ່​ທ່ອງ​ທ່ຽວ",
+    "Province": "ແຂວງ",
+    "=== Select Province ===": "=== ເລືອກ​ແຂວງ ===",
+    "District": "ເມືອງ",
+    "=== Select district ===": "=== ເລືອກ​ເມືອງ ===",
+    "Localition name lao": "ຊື່​ສະ​ຖານ​ທີ​ເປັນ​ລາວ",
+    "Localition name english": "ຊື່​ສະ​ຖານ​ທີ​ເປັນ​ອັງ​ກິດ",
+    "Latitude": "ເສັ້ນແວງ",
+    "Longtitude": "ເສັ້ນຂະໜານ",
+    "Click get current location": "ກົດ​ເອົາ​ສະ​ຖານ​ທີ່​ປັດ​ຈ​ຸ​ປັນ",
+    "Details Lao": "​ລ​າຍ​ລະ​ອຽດ​ເປັນ​ລາວ",
+    "Details English": "​ລ​າຍ​ລະ​ອຽດ​ເປັນ​ອັງ​ກິດ",
+    "Upload Photo": "​ອັບ​ໂຫຼດ​ຮູບ​ພາບ",
+    "This location has already exist!": "​ສະ​ຖານ​ທີ່ນີ້​ມີ​ຢູ່​ໃນ​ລະ​ບົບ​ແລ້ວ!",
+    "Save": "ບັນ​ທືກ",
+    "Crop photo": "ຕັດ​ຮູບ​ພາບ"
 }

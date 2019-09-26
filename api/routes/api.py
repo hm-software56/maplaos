@@ -50,3 +50,8 @@ def loadimg(id):
 @app.route('/showimg/<filename>', methods=['GET'])
 def showimg(filename):
     return send_file('images/'+filename, mimetype='image/jpg')
+
+@app.route('/textsearch', methods=['GET'])
+def textsearch():
+    photo=Location().textsearch()
+    return photo
