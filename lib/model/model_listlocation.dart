@@ -6,6 +6,7 @@ import 'package:maplaos/model/alert.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loadmore/loadmore.dart';
 
 class ModelListLocation extends StatefulWidget {
   @override
@@ -19,6 +20,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
   void loadlistlocation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int userId = prefs.getInt('userId');
+    String userType = prefs.getString('userType');
     var conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
         host: setting.host,
         port: setting.port,
@@ -26,8 +28,14 @@ class _ModelListLocationState extends State<ModelListLocation> {
         password: setting.password,
         db: setting.db,
         timeout: Duration(seconds: 5)));
-    var locations = await conn.query(
-        'select * from location where user_id=? order by id DESC', [userId]);
+    var locations;
+    if (userType == "admin") {
+      locations = await conn.query(
+          'select * from location  order by id DESC');
+    } else {
+      locations = await conn.query(
+          'select * from location where user_id=? order by id DESC', [userId]);
+    }
     for (var location in locations) {
       listlocation.add(location);
     }
@@ -87,10 +95,8 @@ class _ModelListLocationState extends State<ModelListLocation> {
                     // Show a red background as the item is swiped away.
                     background: Container(color: Colors.red),
                     child: ListTile(
-                      leading: Icon(
-                        Icons.map,
-                        color: Colors.red,
-                      ),
+                      leading: CircleAvatar(
+                          backgroundImage: AssetImage('assets/map.png')),
                       trailing: Icon(
                         Icons.menu,
                         color: Colors.red,
@@ -102,14 +108,23 @@ class _ModelListLocationState extends State<ModelListLocation> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(AppLocalizations.of(context).tr('Latitude') +
-                              ": " +
-                              listlocation[index]['latitude'].toString(),style: TextStyle(fontSize: 10.0),),
-                          Text(AppLocalizations.of(context).tr('Longtitude') +
-                              ": " +
-                              listlocation[index]['longitude'].toString(),style: TextStyle(fontSize: 10.0),),
-                          Text(AppLocalizations.of(context).tr('Status') +
-                              ": $name",style: TextStyle(fontSize: 10.0),),
+                          Text(
+                            AppLocalizations.of(context).tr('Latitude') +
+                                ": " +
+                                listlocation[index]['latitude'].toString(),
+                            style: TextStyle(fontSize: 10.0),
+                          ),
+                          Text(
+                            AppLocalizations.of(context).tr('Longtitude') +
+                                ": " +
+                                listlocation[index]['longitude'].toString(),
+                            style: TextStyle(fontSize: 10.0),
+                          ),
+                          Text(
+                            AppLocalizations.of(context).tr('Status') +
+                                ": $name",
+                            style: TextStyle(fontSize: 10.0, color:listlocation[index]['status'].toString() == 'Pedding'?Colors.red:Colors.green),
+                          ),
                         ],
                       ),
                     ));

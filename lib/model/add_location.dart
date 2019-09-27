@@ -6,6 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:latlong/latlong.dart';
 import 'package:maplaos/model/alert.dart';
 import 'package:maplaos/model/check_location_near.dart';
+import 'package:maplaos/model/model_listlocation.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:dio/dio.dart';
@@ -164,7 +165,8 @@ class _AddLocationState extends State<AddLocation> {
       isloadingsave = true;
     });
     Dio dio = new Dio();
-    var response = await dio.get("${setting.apiUrl}/textsearch"); // for update text search
+    var response =
+        await dio.get("${setting.apiUrl}/textsearch"); // for update text search
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('userId');
@@ -242,6 +244,13 @@ class _AddLocationState extends State<AddLocation> {
             'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
             [data['detail_en'], data['detail_la'], saveloca.insertId]);
       }
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ModelListLocation()),
+          );
     }
     setState(() {
       isloadingsave = false;

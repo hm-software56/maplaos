@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget build(BuildContext context) {
     return SplashScreen(
-            seconds: 8,
+            seconds:4,
             navigateAfterSeconds: connected?Home():'',
             title: new Text(
               'ຍີ​ນດີ​ທ່ຽວເມືອງລາວ',
