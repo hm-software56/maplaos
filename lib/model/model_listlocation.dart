@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:maplaos/model/add_location.dart';
 import 'package:maplaos/model/alert.dart';
+import 'package:maplaos/model/model_location_view.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,8 +31,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
         timeout: Duration(seconds: 5)));
     var locations;
     if (userType == "admin") {
-      locations = await conn.query(
-          'select * from location  order by id DESC');
+      locations = await conn.query('select * from location  order by id DESC');
     } else {
       locations = await conn.query(
           'select * from location where user_id=? order by id DESC', [userId]);
@@ -97,9 +97,19 @@ class _ModelListLocationState extends State<ModelListLocation> {
                     child: ListTile(
                       leading: CircleAvatar(
                           backgroundImage: AssetImage('assets/map.png')),
-                      trailing: Icon(
-                        Icons.menu,
-                        color: Colors.red,
+                      trailing: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ModelLocationView(
+                                    listlocation[index]['id']),
+                              ));
+                        },
+                        child: Icon(
+                          Icons.panorama_fish_eye,
+                          color: Colors.red,
+                        ),
                       ),
                       title: Localizations.localeOf(context).languageCode ==
                               "en"
@@ -123,11 +133,18 @@ class _ModelListLocationState extends State<ModelListLocation> {
                           Text(
                             AppLocalizations.of(context).tr('Status') +
                                 ": $name",
-                            style: TextStyle(fontSize: 10.0, color:listlocation[index]['status'].toString() == 'Pedding'?Colors.red:Colors.green),
+                            style: TextStyle(
+                                fontSize: 10.0,
+                                color:
+                                    listlocation[index]['status'].toString() ==
+                                            'Pedding'
+                                        ? Colors.red
+                                        : Colors.green),
                           ),
                         ],
                       ),
-                    ));
+                    )
+                    );
               },
               separatorBuilder: (context, index) {
                 return Divider();
