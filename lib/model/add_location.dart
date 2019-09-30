@@ -298,6 +298,8 @@ class _AddLocationState extends State<AddLocation> {
                           FormBuilderDropdown(
                             attribute: "province_name",
                             decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.aspect_ratio),
+                              border: InputBorder.none,
                                 labelText: AppLocalizations.of(context)
                                     .tr('Province')),
                             // initialValue: 'Male',

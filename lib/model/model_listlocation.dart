@@ -107,7 +107,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
                               ));
                         },
                         child: Icon(
-                          Icons.panorama_fish_eye,
+                          Icons.visibility,
                           color: Colors.red,
                         ),
                       ),
