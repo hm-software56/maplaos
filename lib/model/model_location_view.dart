@@ -30,8 +30,9 @@ class _ModelLocationViewState extends State<ModelLocationView> {
         user: setting.user,
         password: setting.password,
         db: setting.db));
-    var locations =
-        await conn.query("select * from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?", [locationId]);
+    var locations = await conn.query(
+        "select * from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?",
+        [locationId]);
     for (var location in locations) {
       setState(() {
         locationlist = location;
@@ -65,6 +66,16 @@ class _ModelLocationViewState extends State<ModelLocationView> {
           String name = locationlist['status'].toString() == 'Open'
               ? AppLocalizations.of(context).tr('Public')
               : AppLocalizations.of(context).tr('Pedding');
+          String pro_name = Localizations.localeOf(context).languageCode == "en"
+              ? AppLocalizations.of(context).tr('Province: ') +
+                  locationlist['pro_name'].toString()
+              : AppLocalizations.of(context).tr('Province: ') +
+                  locationlist['pro_name_la'].toString();
+          String dis_name = Localizations.localeOf(context).languageCode == "en"
+              ? AppLocalizations.of(context).tr('District: ') +
+                  locationlist['dis_name'].toString()
+              : AppLocalizations.of(context).tr('District: ') +
+                  locationlist['dis_name_la'].toString();
           return SingleChildScrollView(
             child: Container(
               color: Colors.transparent,
@@ -104,17 +115,25 @@ class _ModelLocationViewState extends State<ModelLocationView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
+                                  pro_name,
+                                  style: TextStyle(fontSize: 11.0),
+                                ),
+                                Text(
+                                  dis_name,
+                                  style: TextStyle(fontSize: 11.0),
+                                ),
+                                Text(
                                   AppLocalizations.of(context).tr('Latitude') +
                                       ": " +
                                       locationlist['latitude'].toString(),
-                                  style: TextStyle(fontSize: 10.0),
+                                  style: TextStyle(fontSize: 11.0),
                                 ),
                                 Text(
                                   AppLocalizations.of(context)
                                           .tr('Longtitude') +
                                       ": " +
                                       locationlist['longitude'].toString(),
-                                  style: TextStyle(fontSize: 10.0),
+                                  style: TextStyle(fontSize: 11.0),
                                 ),
                                 Text(
                                   AppLocalizations.of(context).tr('Status') +
@@ -130,7 +149,7 @@ class _ModelLocationViewState extends State<ModelLocationView> {
                               ],
                             ),
                           ),
-                          Loadimg(locationlist['id']),
+                          Loadimg(locationId),
                         ],
                       ),
                     ),
@@ -165,7 +184,8 @@ class _ModelLocationViewState extends State<ModelLocationView> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddLocation(this.locationId)),
+                MaterialPageRoute(
+                    builder: (context) => AddLocation(this.locationId)),
               );
             },
           ),

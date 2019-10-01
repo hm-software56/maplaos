@@ -15,34 +15,19 @@ class _LoadimgState extends State<Loadimg> {
   _LoadimgState(this.location_id);
 
   Setting setting = Setting();
-  var photo1;
-  var photo2;
+  List listphoto=List();
   bool isloding=true;
   void loadingImg() async {
-    try {
       Response response = await Dio(BaseOptions(
-        connectTimeout: 5000,
-        receiveTimeout: 5000,
       )).get('${setting.apiUrl}/loadimg/${location_id}');
-      int i = 0;
       for (var data in response.data) {
-        i = i + 1;
-        if (i == 1) {
-          setState(() {
-           photo1 = '${setting.apiUrl}/showimg/${data}'; 
-          });
-        } else {
-         setState(() {
-           photo2 = '${setting.apiUrl}/showimg/${data}'; 
-         });
-        }
+        listphoto.add(data);
       }
       setState(() {
+        listphoto=listphoto;
        isloding=false; 
       });
-    } catch (e) {
-      print(e);
-    }
+    
   }
 
 void initState() { 
@@ -54,26 +39,13 @@ void initState() {
     return isloding? Center(child: CircularProgressIndicator(),) :Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          for (var photo in listphoto) 
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: CachedNetworkImage(
                 fit: BoxFit.cover,
-                height: 150,
-                imageUrl: photo1,
-                placeholder: (context, url) =>
-                    new Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => new Icon(Icons.error),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CachedNetworkImage(
-                fit: BoxFit.cover,
-                height: 150,
-                imageUrl: photo2,
+                imageUrl: '${setting.apiUrl}/showimg/$photo',
                 placeholder: (context, url) =>
                     new Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => new Icon(Icons.error),
