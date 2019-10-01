@@ -16,11 +16,15 @@ import 'package:location/location.dart' as location;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddLocation extends StatefulWidget {
+  int locationId;
+  AddLocation(this.locationId);
   @override
-  _AddLocationState createState() => _AddLocationState();
+  _AddLocationState createState() => _AddLocationState(this.locationId);
 }
 
 class _AddLocationState extends State<AddLocation> {
+  int locationId;
+  _AddLocationState(this.locationId);
   CheckLocationNear locationNear = CheckLocationNear();
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   Setting setting = Setting();
@@ -29,6 +33,70 @@ class _AddLocationState extends State<AddLocation> {
   Map provincesMap = Map();
   List listdistricts = List();
   Map districtMap = Map();
+  var province_name;
+  var district_name;
+  var loc_name;
+  var loc_name_la;
+  var detail_la;
+  var detail_en;
+  var pro_id;
+  void locationData(locationId) async {
+    listProvince();
+    if (locationId != null) {
+      final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+          host: setting.host,
+          port: setting.port,
+          user: setting.user,
+          password: setting.password,
+          db: setting.db));
+      var locations = await conn.query(
+          'select * from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?',
+          [locationId]);
+      for (var location in locations) {
+        setState(() {
+          if (Localizations.localeOf(context).languageCode == "en") {
+            province_name = location['pro_name'];
+            district_name = location['dis_name'];
+          } else {
+            province_name = location['pro_name_la'];
+            district_name = location['dis_name_la'];
+          }
+          loc_name = location['loc_name'];
+          loc_name_la = location['loc_name_la'];
+          latitudecurrent = location['latitude'];
+          longtitudecurrent = location['longitude'];
+          detail_la = location['deltails_la'];
+          detail_en = location['deltails_en'];
+          pro_id=location['provinces_id'];
+          print( location['deltails_la']);
+        });
+      }
+      var districts = await conn
+          .query('select * from districts where provinces_id=?', [pro_id]);
+      for (var district in districts) {
+        if (Localizations.localeOf(context).languageCode == "en") {
+        listdistricts.add(district['dis_name']);
+        districtMap[district['dis_name']] = district['id'];
+      } else {
+        listdistricts.add(district['dis_name_la']);
+        districtMap[district['dis_name_la']] = district['id'];
+      }
+      }
+      var photos = await conn
+          .query('select * from photo where location_id=?', [locationId]);
+      for (var photo in photos) {
+        listphoto.add(photo['photo']);
+      }
+      setState(() {
+        listdistricts=listdistricts;
+        districtMap=districtMap;
+        listphoto = listphoto;
+      });
+    }
+    setState(() {
+      isloading = false;
+    });
+  }
 
   void listProvince() async {
     final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
@@ -47,9 +115,6 @@ class _AddLocationState extends State<AddLocation> {
         provincesMap[province['pro_name_la']] = province['id'];
       }
     }
-    setState(() {
-      isloading = false;
-    });
   }
 
   void listdistrict(var provincename) async {
@@ -247,16 +312,56 @@ class _AddLocationState extends State<AddLocation> {
       Navigator.of(context).pop();
       Navigator.of(context).pop();
       Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ModelListLocation()),
-          );
+        context,
+        MaterialPageRoute(builder: (context) => ModelListLocation()),
+      );
     }
     setState(() {
       isloadingsave = false;
     });
   }
+ 
+  void updatelocation() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user_id = prefs.getInt('userId');
+    bool cansave = true;
+    final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+        host: setting.host,
+        port: setting.port,
+        user: setting.user,
+        password: setting.password,
+        db: setting.db));
+    var data = _fbKey.currentState.value;
 
+    var saveloca = await conn.query(
+          'update  location set latitude=?, longitude=?, loc_name=?,loc_name_la=?,type_location_id=?,provinces_id=?,districts_id=?,villages_id=?,user_id=? where id=?',
+          [
+            data['latitude'],
+            data['longtitude'],
+            data['loc_name'],
+            data['loc_name_la'],
+            null,
+            provincesMap[data['province_name']],
+            districtMap[data['district_name']],
+            null,
+            user_id,
+            locationId,
+          ]);
+      if (saveloca.insertId != null) {
+        await conn.query('delete from photo where location_id=?',[locationId]);
+        for (var photo in listphoto) {
+          var savephoto = await conn.query(
+              'insert into photo (photo, location_id) values (?, ?)',
+              [photo, locationId]);
+        }
+
+        await conn.query('delete from location_details where location_id=?',[locationId]);
+        var savedetail = await conn.query(
+            'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
+            [data['detail_en'], data['detail_la'], locationId]);
+      }
+      Navigator.of(context).pop();
+  }
   void removephoto(var photo) {
     setState(() {
       listphoto.remove(photo);
@@ -267,13 +372,14 @@ class _AddLocationState extends State<AddLocation> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    listProvince();
+    locationData(locationId);
 
     //locationNear.checknear();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(loc_name_la);
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -289,17 +395,16 @@ class _AddLocationState extends State<AddLocation> {
           : ListView(
               children: <Widget>[
                 Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: FormBuilder(
                       key: _fbKey,
                       autovalidate: true,
                       child: Column(
                         children: <Widget>[
                           FormBuilderDropdown(
+                            initialValue: province_name,
                             attribute: "province_name",
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.aspect_ratio),
-                              border: InputBorder.none,
                                 labelText: AppLocalizations.of(context)
                                     .tr('Province')),
                             // initialValue: 'Male',
@@ -319,6 +424,7 @@ class _AddLocationState extends State<AddLocation> {
                             padding: EdgeInsets.all(10),
                           ),
                           FormBuilderDropdown(
+                            initialValue: district_name,
                             attribute: "district_name",
                             decoration: InputDecoration(
                                 labelText: AppLocalizations.of(context)
@@ -340,6 +446,7 @@ class _AddLocationState extends State<AddLocation> {
                             padding: EdgeInsets.all(10),
                           ),
                           FormBuilderTextField(
+                            initialValue: loc_name_la,
                             attribute: "loc_name_la",
                             decoration: InputDecoration(
                                 labelText: AppLocalizations.of(context)
@@ -352,6 +459,7 @@ class _AddLocationState extends State<AddLocation> {
                             padding: EdgeInsets.all(10),
                           ),
                           FormBuilderTextField(
+                            initialValue: loc_name,
                             attribute: "loc_name",
                             decoration: InputDecoration(
                                 labelText: AppLocalizations.of(context)
@@ -419,6 +527,7 @@ class _AddLocationState extends State<AddLocation> {
                             padding: EdgeInsets.all(10),
                           ),
                           FormBuilderTextField(
+                            initialValue: detail_la,
                             attribute: "detail_la",
                             maxLines: 3,
                             decoration: InputDecoration(
@@ -429,6 +538,7 @@ class _AddLocationState extends State<AddLocation> {
                             padding: EdgeInsets.all(10),
                           ),
                           FormBuilderTextField(
+                            initialValue: detail_en,
                             attribute: "detail_en",
                             maxLines: 3,
                             decoration: InputDecoration(
@@ -472,7 +582,12 @@ class _AddLocationState extends State<AddLocation> {
                                           onPressed: () {
                                             if (_fbKey.currentState
                                                 .saveAndValidate()) {
+                                              if(locationId==null)
+                                              {
                                               savelocation();
+                                              }else{
+                                                updatelocation();
+                                              }
                                             }
                                           },
                                           child: new Icon(

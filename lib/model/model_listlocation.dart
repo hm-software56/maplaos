@@ -155,7 +155,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddLocation(),
+                builder: (context) => AddLocation(null),
               ));
         },
         child: Icon(Icons.add),

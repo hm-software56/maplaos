@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/material.dart';
+import 'package:maplaos/model/add_location.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maplaos/setting/setting.dart';
@@ -30,7 +31,7 @@ class _ModelLocationViewState extends State<ModelLocationView> {
         password: setting.password,
         db: setting.db));
     var locations =
-        await conn.query("select * from location where id=?", [locationId]);
+        await conn.query("select * from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?", [locationId]);
     for (var location in locations) {
       setState(() {
         locationlist = location;
@@ -155,6 +156,20 @@ class _ModelLocationViewState extends State<ModelLocationView> {
             : Localizations.localeOf(context).languageCode == "en"
                 ? Text(locationlist['loc_name'].toString())
                 : Text(locationlist['loc_name_la'].toString()),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.edit_location,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddLocation(this.locationId)),
+              );
+            },
+          ),
+        ],
       ),
       body: isloading
           ? Center(
@@ -167,7 +182,7 @@ class _ModelLocationViewState extends State<ModelLocationView> {
               initialCameraPosition: CameraPosition(
                 target:
                     LatLng(locationlist['latitude'], locationlist['longitude']),
-                zoom: 20,
+                zoom: 15,
               ),
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
