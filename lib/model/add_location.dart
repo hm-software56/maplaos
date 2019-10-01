@@ -319,6 +319,7 @@ class _AddLocationState extends State<AddLocation> {
     setState(() {
       isloadingsave = false;
     });
+    await Dio().get('${setting.apiUrl}/textsearch');
   }
  
   void updatelocation() async{
@@ -360,6 +361,7 @@ class _AddLocationState extends State<AddLocation> {
             'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
             [data['detail_en'], data['detail_la'], locationId]);
       }
+      await Dio().get('${setting.apiUrl}/textsearch');
       Navigator.of(context).pop();
   }
   void removephoto(var photo) {
