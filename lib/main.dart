@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import 'model/how_us.dart';
 import 'model/add_location.dart';
+
 void main() => runApp(EasyLocalization(child: MyApp()));
 
 class MyApp extends StatelessWidget {
@@ -22,12 +23,10 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           //app-specific localization
           EasylocaLizationDelegate(
-              locale: data.locale,
-              path: 'resources/langs'),
+              locale: data.locale, path: 'resources/langs'),
         ],
         supportedLocales: [Locale('en', 'US'), Locale('lo', 'LA')],
         locale: data.savedLocale,
-
         debugShowCheckedModeBanner: false,
         title: 'Maplaos',
         theme: ThemeData(
