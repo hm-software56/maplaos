@@ -5,9 +5,6 @@ import 'package:maplaos/homescreen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'model/how_us.dart';
-import 'model/add_location.dart';
-
 void main() => runApp(EasyLocalization(child: MyApp()));
 
 class MyApp extends StatelessWidget {
