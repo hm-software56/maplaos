@@ -184,7 +184,7 @@ class _MenuState extends State<Menu> {
           sourcePath: imageBgFile.path,
           ratioX: 1.8,
           ratioY: 1.0,
-          toolbarTitle: 'Crop photo',
+          toolbarTitle: AppLocalizations.of(context).tr('Crop photo'),
           toolbarColor: Colors.red);
       if (croppedFile != null) {
         imageBgFile = croppedFile;
@@ -251,13 +251,15 @@ class _MenuState extends State<Menu> {
                       height: 80.0,
                       child: Column(
                         children: <Widget>[
-                          Text(AppLocalizations.of(context).tr('Change Backgroud'),
+                          Text(
+                            AppLocalizations.of(context).tr('Change Backgroud'),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Row(
                             children: <Widget>[
                               OutlineButton.icon(
-                                label: Text(AppLocalizations.of(context).tr('GALLERY'),
+                                label: Text(
+                                    AppLocalizations.of(context).tr('GALLERY'),
                                     style: TextStyle(
                                         fontSize: 10.0, color: Colors.black)),
                                 icon: Icon(
@@ -273,7 +275,8 @@ class _MenuState extends State<Menu> {
                               Padding(
                                 padding: EdgeInsets.only(left: 10.0),
                                 child: OutlineButton.icon(
-                                  label: Text(AppLocalizations.of(context).tr('CAMERA'),
+                                  label: Text(
+                                      AppLocalizations.of(context).tr('CAMERA'),
                                       style: TextStyle(fontSize: 10.0)),
                                   icon: Icon(
                                     Icons.camera,
@@ -308,13 +311,17 @@ class _MenuState extends State<Menu> {
                           height: 80.0,
                           child: Column(
                             children: <Widget>[
-                              Text(AppLocalizations.of(context).tr("Change Profile"),
+                              Text(
+                                AppLocalizations.of(context)
+                                    .tr("Change Profile"),
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Row(
                                 children: <Widget>[
                                   OutlineButton.icon(
-                                    label: Text(AppLocalizations.of(context).tr('GALLERY'),
+                                    label: Text(
+                                        AppLocalizations.of(context)
+                                            .tr('GALLERY'),
                                         style: TextStyle(
                                             fontSize: 10.0,
                                             color: Colors.black)),
@@ -331,7 +338,9 @@ class _MenuState extends State<Menu> {
                                   Padding(
                                     padding: EdgeInsets.only(left: 10.0),
                                     child: OutlineButton.icon(
-                                      label: Text(AppLocalizations.of(context).tr('CAMERA'),
+                                      label: Text(
+                                          AppLocalizations.of(context)
+                                              .tr('CAMERA'),
                                           style: TextStyle(fontSize: 10.0)),
                                       icon: Icon(
                                         Icons.camera,
@@ -374,10 +383,12 @@ class _MenuState extends State<Menu> {
                 Icons.assessment,
                 color: Colors.red,
               ),
-              title: Text(AppLocalizations.of(context).tr("How to Use"),
+              title: Text(
+                AppLocalizations.of(context).tr("How to use"),
                 style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Text(AppLocalizations.of(context).tr("​How to use this app"),
+              subtitle: Text(
+                AppLocalizations.of(context).tr("How to use this app"),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: Icon(Icons.keyboard_arrow_right),
@@ -395,10 +406,12 @@ class _MenuState extends State<Menu> {
                 Icons.settings_applications,
                 color: Colors.red,
               ),
-              title: Text(AppLocalizations.of(context).tr("About Us"),
+              title: Text(
+                AppLocalizations.of(context).tr("About Us"),
                 style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Text(AppLocalizations.of(context).tr("Explain about us"),
+              subtitle: Text(
+                AppLocalizations.of(context).tr("Explain about us"),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: Icon(Icons.keyboard_arrow_right),
@@ -411,68 +424,82 @@ class _MenuState extends State<Menu> {
                     ));
               },
             ),
-            ListTile(
+            ExpansionTile(
               leading: Icon(
-                Icons.save,
+                Icons.settings,
                 color: Colors.red,
               ),
-              title: Text(AppLocalizations.of(context).tr('Switch Language'),
+              title: Text(
+                AppLocalizations.of(context).tr('Setting'),
                 style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: GestureDetector(
-                      onTap: () {
-                        this.setState(() {
-                          data.changeLocale(Locale("lo", "LA"));
-                        });
-                      },
-                      child: Image.asset(
-                        'assets/la.png', // On click should redirect to an URL
-                        width: 10.0,
-                        height: 10.0,
-                      ),
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(
+                    Icons.language,
+                    color: Colors.red,
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).tr('Switch Language'),
+                    style: TextStyle(fontSize: 12.0),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              this.setState(() {
+                                data.changeLocale(Locale("lo", "LA"));
+                              });
+                            },
+                            child: Image.asset(
+                              'assets/la.png', // On click should redirect to an URL
+                              width: 10.0,
+                              height: 10.0,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              this.setState(() {
+                                data.changeLocale(Locale("en", "US"));
+                              });
+                            },
+                            child: Image.asset(
+                              'assets/en.png', // On click should redirect to an URL
+                              width: 10.0,
+                              height: 10.0,
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                      onTap: () {
-                        this.setState(() {
-                          data.changeLocale(Locale("en", "US"));
-                        });
-                      },
-                      child: Image.asset(
-                        'assets/en.png', // On click should redirect to an URL
-                        width: 10.0,
-                        height: 10.0,
-                      ),
-                    ),
-                    )
-                  ],
+                  ),
+                  trailing: Icon(Icons.keyboard_arrow_right),
                 ),
-              ),
-              trailing: Icon(Icons.keyboard_arrow_right),
+                islogin
+                    ? ListTile(
+                        leading: Icon(
+                          Icons.settings_power,
+                          color: Colors.red,
+                        ),
+                        trailing: Icon(Icons.keyboard_arrow_right),
+                        title: Text(
+                          AppLocalizations.of(context).tr("Logout"),
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        onTap: () {
+                          logout();
+                        },
+                      )
+                    : Text(''),
+              ],
             ),
-            Divider(),
-            islogin
-                ? ListTile(
-                    trailing: Icon(
-                      Icons.settings_power,
-                      color: Colors.red,
-                    ),
-                    title: Text(AppLocalizations.of(context).tr("Logout"),
-                      style: TextStyle(
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    onTap: () {
-                      logout();
-                    },
-                  )
-                : Text(''),
           ],
         ),
       ),

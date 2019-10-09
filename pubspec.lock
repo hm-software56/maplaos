@@ -168,7 +168,7 @@ packages:
       name: datetime_picker_formfield
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0-pre.5"
+    version: "1.0.0-pre.4"
   device_id:
     dependency: "direct main"
     description:
@@ -229,7 +229,7 @@ packages:
       name: flutter_form_builder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.5.5"
+    version: "3.5.3"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -365,7 +365,7 @@ packages:
       name: intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.16.0"
+    version: "0.15.8"
   json_annotation:
     dependency: transitive
     description:
