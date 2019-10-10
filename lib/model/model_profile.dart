@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:maplaos/setting/setting.dart';
@@ -91,9 +92,9 @@ class _ModelProfileState extends State<ModelProfile> {
             builder: (BuildContext context) {
               return RichAlertDialog(
                 //uses the custom alert dialog
-                alertTitle: richTitle("ສຳ​ເລັດ/Successed"),
+                alertTitle: richTitle(AppLocalizations.of(context).tr('Successed')),
                 alertSubtitle:
-                    richSubtitle("ກົດ​ປຸ່ມ​ຂ້າງ​ລຸ່ມ​/Click button below"),
+                    richSubtitle(AppLocalizations.of(context).tr("Click button below")),
                 alertType: RichAlertType.SUCCESS,
                 actions: <Widget>[
                   IconButton(
@@ -121,8 +122,7 @@ class _ModelProfileState extends State<ModelProfile> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text(
-          'ໂປ​ຣ​ໄຟ​ຣ/Profile',
+            child: Text(AppLocalizations.of(context).tr('Profile'),
           textAlign: TextAlign.center,
         )),
       ),
@@ -138,11 +138,10 @@ class _ModelProfileState extends State<ModelProfile> {
                   FormBuilderTextField(
                     attribute: "first_name",
                     initialValue:'$first_name',
-                    decoration: InputDecoration(labelText: "ຊື່/First name"),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('First name')),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:
-                              'ທ່ານ​ຕ້ອງ​ປ້ອນ​ຊື່/Please enter first name'),
+                          errorText:AppLocalizations.of(context).tr('Please enter first name')),
                     ],
                   ),
                   Padding(
@@ -152,11 +151,10 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "last_name",
                     initialValue:'$last_name',
                     decoration:
-                        InputDecoration(labelText: "​ນາມ​ສະ​ກຸນ/Last name"),
+                        InputDecoration(labelText: AppLocalizations.of(context).tr('Last name')),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:
-                              'ທ່ານ​ຕ້ອງ​ປ້ອນ​​ນາມ​ສະ​ກຸນ/Please enter last name'),
+                          errorText:AppLocalizations.of(context).tr('Please enter last name')),
                     ],
                   ),
                   Padding(
@@ -166,7 +164,7 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "email",
                     initialValue:'$email',
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(labelText: "ອີ​ເມວ/Email"),
+                    decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('Email')),
                     validators: [
                       FormBuilderValidators.max(255),
                     ],
@@ -178,11 +176,10 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "phone",
                     initialValue:'$phone',
                     keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(labelText: "ເບີ​ໂທ/Phone"),
+                    decoration: InputDecoration(labelText:  AppLocalizations.of(context).tr('Phone number')),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:
-                              'ທ່ານ​ຕ້ອງ​ປ້ອນ​​ເບີ​ໂທ/Please enter phone number'),
+                          errorText:AppLocalizations.of(context).tr('Please enter phone number')),
                     ],
                   ),
                   Padding(
@@ -193,11 +190,10 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "username",
                     initialValue:'$username',
                     decoration:
-                        InputDecoration(labelText: "ຊື່​ເຂົ້າ​ລະ​ບົບ/Username"),
+                        InputDecoration(labelText: AppLocalizations.of(context).tr("Username")),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:
-                              'ທ່ານ​ຕ້ອງ​ປ້ອນ​​ຊື່​ເຂົ້າ​ລະ​ບົບ/Please enter username'),
+                          errorText:AppLocalizations.of(context).tr("Please enter username")),
                     ],
                   ),
                   Padding(
@@ -208,14 +204,14 @@ class _ModelProfileState extends State<ModelProfile> {
                     initialValue:'$password',
                     obscureText: true,
                     decoration:
-                        InputDecoration(labelText: "ລະ​ຫັດ​ຜ່ານ/Password"),
+                        InputDecoration(labelText: AppLocalizations.of(context).tr("Password")),
                     validators: [
                       FormBuilderValidators.required(
                           errorText:
-                              'ທ່ານ​ຕ້ອງ​ປ້ອນ​​ລະ​ຫັດ​ຜ່ານ/Please enter password'),
+                              AppLocalizations.of(context).tr('Please enter password')),
                       FormBuilderValidators.min(4,
                           errorText:
-                              'ລະ​ຫັດ​ຜ່ານ​ຕ້ອງ​ມີ 4 ໂຕ​ຂື້ນ​ໄປ/Password must contain 4 or more digits'),
+                              AppLocalizations.of(context).tr('Password must contain 4 or more digits')),
                     ],
                   ),
                   Padding(
@@ -226,14 +222,14 @@ class _ModelProfileState extends State<ModelProfile> {
                     initialValue:'$password',
                     obscureText: true,
                     decoration: InputDecoration(
-                        labelText: "ຢືນ​ຢັນ​ລະ​ຫັດ/Password confirm"),
+                        labelText: AppLocalizations.of(context).tr("Password confirm")),
                     validators: [
                       FormBuilderValidators.required(),
                       (val) {
                         if (_fbKey.currentState.fields['password'].currentState
                                 .value !=
                             val) {
-                          return "ຢືນ​ຢັນ​ລະ​ຫັດ​ບໍ່​ຖືກ​ຕ້ອງ​/Password confirm is incorect";
+                          return AppLocalizations.of(context).tr("Password confirm is incorect");
                         }
                       }
                     ],
@@ -254,7 +250,7 @@ class _ModelProfileState extends State<ModelProfile> {
                                   color: Colors.white,
                                 ),
                                 label: Text(
-                                  '​ສົ່ງ/Submit',
+                                  AppLocalizations.of(context).tr("Submit"),
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 key: null,

@@ -15,33 +15,6 @@ class _HowUsState extends State<HowUs> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context).tr('How to use')),
-          //title: Text('ວິ​ທີ​ນຳ​ໃຊ້​/How to use'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("English"),
-              color: Localizations.localeOf(context).languageCode == "en"
-                  ? Colors.lightBlueAccent
-                  : Colors.blue,
-              onPressed: () {
-                this.setState(() {
-                  data.changeLocale(Locale("en", "US"));
-                  print(Localizations.localeOf(context).languageCode);
-                });
-              },
-            ),
-            FlatButton(
-              child: Text("Lao"),
-              color: Localizations.localeOf(context).languageCode == "ar"
-                  ? Colors.lightBlueAccent
-                  : Colors.blue,
-              onPressed: () {
-                this.setState(() {
-                  data.changeLocale(Locale("lo", "LA"));
-                  print(Localizations.localeOf(context).languageCode);
-                });
-              },
-            )
-          ],
         ),
         body: Container(
           child: Center(
