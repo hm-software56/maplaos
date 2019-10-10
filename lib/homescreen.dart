@@ -9,6 +9,8 @@ import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:device_id/device_id.dart';
+import 'package:flutter_background_location/flutter_background_location.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -29,18 +31,24 @@ class _HomeScreenState extends State<HomeScreen> {
         .getPositionStream(locationOptions)
         .listen((Position position) async {
       if (position != null) {
-        final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
-          host: setting.host,
-          port: setting.port,
-          user: setting.user,
-          password: setting.password,
-          db: setting.db,
-          timeout: Duration(seconds: 3)));
-          var now = new DateTime.now();
-          String deviceid = await DeviceId.getID;
-          await conn.query(
-              'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
-              [position.latitude.toString(), position.longitude.toString(),deviceid,now.toString()]);
+        final conn = await mysql.MySqlConnection.connect(
+            mysql.ConnectionSettings(
+                host: setting.host,
+                port: setting.port,
+                user: setting.user,
+                password: setting.password,
+                db: setting.db,
+                timeout: Duration(seconds: 3)));
+        var now = new DateTime.now();
+        String deviceid = await DeviceId.getID;
+        await conn.query(
+            'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
+            [
+              position.latitude.toString(),
+              position.longitude.toString(),
+              deviceid,
+              now.toString()
+            ]);
       }
     });
     positionStream.onDone(() => setState(() {
@@ -74,13 +82,34 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     autocomplete();
-    checkGPS();
+    FlutterBackgroundLocation.startLocationService();
+    FlutterBackgroundLocation.getLocationUpdates((location) async {
+      print(location.latitude.toString());
+      final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+          host: setting.host,
+          port: setting.port,
+          user: setting.user,
+          password: setting.password,
+          db: setting.db,
+          timeout: Duration(seconds: 3)));
+      var now = new DateTime.now();
+      String deviceid = await DeviceId.getID;
+      await conn.query(
+          'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
+          [
+            location.latitude.toString(),
+            location.longitude.toString(),
+            deviceid,
+            now.toString()
+          ]);
+    });
+    //checkGPS();
   }
 
   Widget build(BuildContext context) {
     return SplashScreen(
       seconds: 4,
-      navigateAfterSeconds: connected ?Home(): '',
+      navigateAfterSeconds: connected ? AboutUs() : '',
       title: new Text(
         'ຍີ​ນດີ​ທ່ຽວເມືອງລາວ',
         style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
