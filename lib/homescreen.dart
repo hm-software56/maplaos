@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
               deviceid,
               now.toString()
             ]);
+        conn.close();
       }
     });
     positionStream.onDone(() => setState(() {
@@ -77,32 +78,56 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  @override
+  double meter = 0;
+  double lat;
+  double long;
   @override
   void initState() {
     super.initState();
     autocomplete();
     FlutterBackgroundLocation.startLocationService();
     FlutterBackgroundLocation.getLocationUpdates((location) async {
-      print(location.latitude.toString());
-      final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
-          host: setting.host,
-          port: setting.port,
-          user: setting.user,
-          password: setting.password,
-          db: setting.db,
-          timeout: Duration(seconds: 3)));
-      var now = new DateTime.now();
-      String deviceid = await DeviceId.getID;
-      await conn.query(
-          'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
-          [
-            location.latitude.toString(),
-            location.longitude.toString(),
-            deviceid,
-            now.toString()
-          ]);
+     /* print(location.latitude.toString());
+      print(location.accuracy.toString());
+      print(location.altitude.toString());
+      print(location.bearing.toString());
+      print(location.speed.toString());
+      print("==========================");*/
+      if (meter == 0) {
+        lat = location.latitude;
+        long = location.longitude;
+      }
+      double meterd = await Geolocator()
+          .distanceBetween(lat, long, location.latitude, location.longitude);
+      if (meterd >= 500) {
+        lat = location.latitude;
+        long = location.longitude;
+      }
+      if (meter == 0 || meterd >= 500) {
+        meter = 1;
+        meterd=0;
+        final conn = await mysql.MySqlConnection.connect(
+            mysql.ConnectionSettings(
+                host: setting.host,
+                port: setting.port,
+                user: setting.user,
+                password: setting.password,
+                db: setting.db,
+                timeout: Duration(seconds: 3)));
+        var now = new DateTime.now();
+        String deviceid = await DeviceId.getID;
+        await conn.query(
+            'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
+            [
+              location.latitude.toString(),
+              location.longitude.toString(),
+              deviceid,
+              now.toString()
+            ]);
+        conn.close();
+      }
     });
+    //FlutterBackgroundLocation.stopLocationService();
     //checkGPS();
   }
 
