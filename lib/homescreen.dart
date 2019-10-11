@@ -57,8 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _showNotification(var conn, var currentLocation) async {
-    var locations =
-        await conn.query('select * from location  order by id ASC');
+    var locations = await conn.query('select * from location  order by id ASC');
     for (var location in locations) {
       final Distance distance = new Distance();
       // meter = 422591.551
@@ -67,29 +66,29 @@ class _HomeScreenState extends State<HomeScreen> {
           LatLng(double.parse(location['latitude'].toString()),
               double.parse(location['longitude'].toString())));
 
-      // if (meter < 1000) {
-      var details = location['loc_name'].toString() +
-          " Near you around " +
-          meter.toString() +
-          " meter" +
-          "\t\t" +
-          location['loc_name_la'] +
-          " ຢູ່​ໃກ້​ທ່ານ​ປະ​ມານ " +
-          meter.toString() +
-          "  ເມັດ";
-      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-          'maplaos', 'Maplaos', 'Detection tourist of laos',
-          importance: Importance.Max,
-          priority: Priority.High,
-          ticker: 'ticker');
-      var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-      var platformChannelSpecifics = NotificationDetails(
-          androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-      await flutterLocalNotificationsPlugin.show(
-          0, 'Maplaos', '$details', platformChannelSpecifics,
-          payload: 'item x');
-      break;
-      // }
+      if (meter < 1000) {
+        var details = location['loc_name'].toString() +
+            " Near you around " +
+            meter.toString() +
+            " meter" +
+            "\t\t" +
+            location['loc_name_la'] +
+            " ຢູ່​ໃກ້​ທ່ານ​ປະ​ມານ " +
+            meter.toString() +
+            "  ເມັດ";
+        var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+            'maplaos', 'Maplaos', 'Detection tourist of laos',
+            importance: Importance.Max,
+            priority: Priority.High,
+            ticker: 'ticker');
+        var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+        var platformChannelSpecifics = NotificationDetails(
+            androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+        await flutterLocalNotificationsPlugin.show(
+            0, 'Maplaos', '$details', platformChannelSpecifics,
+            payload: 'item x');
+        break;
+      }
     }
   }
 
