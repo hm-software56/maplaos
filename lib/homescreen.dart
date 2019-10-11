@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:latlong/latlong.dart';
 import 'package:maplaos/home.dart';
 import 'package:maplaos/model/about_us.dart';
 import 'package:maplaos/model/alert.dart';
@@ -13,7 +14,7 @@ import 'package:cron/cron.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+    new FlutterLocalNotificationsPlugin();
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -24,18 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Setting setting = new Setting();
   bool connected = true;
 
-  void sendNotification() async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails('10000',
-        'FLUTTER_NOTIFICATION_CHANNEL', 'FLUTTER_NOTIFICATION_CHANNEL_DETAIL',
-        importance: Importance.Max, priority: Priority.High);
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(111, 'Hello, benznest.',
-        'This is a your notifications. ', platformChannelSpecifics,
-        payload: 'I just haven\'t Met You Yet');
+  Future onSelectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+    await Navigator.push(
+      context,
+      new MaterialPageRoute(builder: (context) => Home()),
+    );
   }
 
   void autocomplete() async {
@@ -59,43 +56,60 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  double meter = 0;
-  double lat;
-  double long;
+  Future<void> _showNotification(var conn, var currentLocation) async {
+    var locations =
+        await conn.query('select * from location  order by id ASC');
+    for (var location in locations) {
+      final Distance distance = new Distance();
+      // meter = 422591.551
+      final double meter = distance(
+          LatLng(currentLocation.latitude, currentLocation.longitude),
+          LatLng(double.parse(location['latitude'].toString()),
+              double.parse(location['longitude'].toString())));
 
-  String message;
-  String channelId = "1000";
-  String channelName = "FLUTTER_NOTIFICATION_CHANNEL";
-  String channelDescription = "FLUTTER_NOTIFICATION_CHANNEL_DETAIL";
+      // if (meter < 1000) {
+      var details = location['loc_name'].toString() +
+          " Near you around " +
+          meter.toString() +
+          " meter" +
+          "\t\t" +
+          location['loc_name_la'] +
+          " ຢູ່​ໃກ້​ທ່ານ​ປະ​ມານ " +
+          meter.toString() +
+          "  ເມັດ";
+      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+          'maplaos', 'Maplaos', 'Detection tourist of laos',
+          importance: Importance.Max,
+          priority: Priority.High,
+          ticker: 'ticker');
+      var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+      var platformChannelSpecifics = NotificationDetails(
+          androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      await flutterLocalNotificationsPlugin.show(
+          0, 'Maplaos', '$details', platformChannelSpecifics,
+          payload: 'item x');
+      break;
+      // }
+    }
+  }
+
+  registerPush() {
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
+  }
 
   @override
   void initState() {
-    message = "No message.";
-
-    var initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_launcher');
-
-    var initializationSettingsIOS = IOSInitializationSettings(
-        onDidReceiveLocalNotification: (id, title, body, payload) {
-      print("onDidReceiveLocalNotification called.");
-    });
-    var initializationSettings = InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (payload) {
-      // when user tap on notification.
-      print("onSelectNotification called.");
-      setState(() {
-        message = payload;
-      });
-    });
-
     super.initState();
     autocomplete();
+    registerPush();
     var cron = new Cron();
     cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
-      sendNotification();
       location.LocationData currentLocation =
           await location.Location().getLocation();
       final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
@@ -105,6 +119,8 @@ class _HomeScreenState extends State<HomeScreen> {
           password: setting.password,
           db: setting.db,
           timeout: Duration(seconds: 3)));
+      _showNotification(conn, currentLocation);
+
       var now = new DateTime.now();
       String deviceid = await DeviceId.getID;
       await conn.query(
