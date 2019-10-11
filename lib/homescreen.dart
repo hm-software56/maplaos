@@ -7,9 +7,13 @@ import 'package:maplaos/model/alert.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart' as location;
 import 'package:device_id/device_id.dart';
-import 'package:flutter_background_location/flutter_background_location.dart';
+import 'package:cron/cron.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,42 +23,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Setting setting = new Setting();
   bool connected = true;
-  var geolocator = Geolocator();
-  var locationOptions = LocationOptions(
-      accuracy: LocationAccuracy.high, distanceFilter: 10, timeInterval: 1);
-  bool trackgps = false;
-  void checkGPS() {
-    setState(() {
-      trackgps = true;
-    });
-    StreamSubscription<Position> positionStream = geolocator
-        .getPositionStream(locationOptions)
-        .listen((Position position) async {
-      if (position != null) {
-        final conn = await mysql.MySqlConnection.connect(
-            mysql.ConnectionSettings(
-                host: setting.host,
-                port: setting.port,
-                user: setting.user,
-                password: setting.password,
-                db: setting.db,
-                timeout: Duration(seconds: 3)));
-        var now = new DateTime.now();
-        String deviceid = await DeviceId.getID;
-        await conn.query(
-            'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
-            [
-              position.latitude.toString(),
-              position.longitude.toString(),
-              deviceid,
-              now.toString()
-            ]);
-        conn.close();
-      }
-    });
-    positionStream.onDone(() => setState(() {
-          trackgps = true;
-        }));
+
+  void sendNotification() async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails('10000',
+        'FLUTTER_NOTIFICATION_CHANNEL', 'FLUTTER_NOTIFICATION_CHANNEL_DETAIL',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(111, 'Hello, benznest.',
+        'This is a your notifications. ', platformChannelSpecifics,
+        payload: 'I just haven\'t Met You Yet');
   }
 
   void autocomplete() async {
@@ -81,53 +62,62 @@ class _HomeScreenState extends State<HomeScreen> {
   double meter = 0;
   double lat;
   double long;
+
+  String message;
+  String channelId = "1000";
+  String channelName = "FLUTTER_NOTIFICATION_CHANNEL";
+  String channelDescription = "FLUTTER_NOTIFICATION_CHANNEL_DETAIL";
+
   @override
   void initState() {
+    message = "No message.";
+
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('ic_launcher');
+
+    var initializationSettingsIOS = IOSInitializationSettings(
+        onDidReceiveLocalNotification: (id, title, body, payload) {
+      print("onDidReceiveLocalNotification called.");
+    });
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (payload) {
+      // when user tap on notification.
+      print("onSelectNotification called.");
+      setState(() {
+        message = payload;
+      });
+    });
+
     super.initState();
     autocomplete();
-    FlutterBackgroundLocation.startLocationService();
-    FlutterBackgroundLocation.getLocationUpdates((location) async {
-     /* print(location.latitude.toString());
-      print(location.accuracy.toString());
-      print(location.altitude.toString());
-      print(location.bearing.toString());
-      print(location.speed.toString());
-      print("==========================");*/
-      if (meter == 0) {
-        lat = location.latitude;
-        long = location.longitude;
-      }
-      double meterd = await Geolocator()
-          .distanceBetween(lat, long, location.latitude, location.longitude);
-      if (meterd >= 500) {
-        lat = location.latitude;
-        long = location.longitude;
-      }
-      if (meter == 0 || meterd >= 500) {
-        meter = 1;
-        meterd=0;
-        final conn = await mysql.MySqlConnection.connect(
-            mysql.ConnectionSettings(
-                host: setting.host,
-                port: setting.port,
-                user: setting.user,
-                password: setting.password,
-                db: setting.db,
-                timeout: Duration(seconds: 3)));
-        var now = new DateTime.now();
-        String deviceid = await DeviceId.getID;
-        await conn.query(
-            'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
-            [
-              location.latitude.toString(),
-              location.longitude.toString(),
-              deviceid,
-              now.toString()
-            ]);
-        conn.close();
-      }
+    var cron = new Cron();
+    cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
+      sendNotification();
+      location.LocationData currentLocation =
+          await location.Location().getLocation();
+      final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
+          host: setting.host,
+          port: setting.port,
+          user: setting.user,
+          password: setting.password,
+          db: setting.db,
+          timeout: Duration(seconds: 3)));
+      var now = new DateTime.now();
+      String deviceid = await DeviceId.getID;
+      await conn.query(
+          'insert into tracking_gps (latitude, logtitude,device_id,date) values (?, ?, ?, ?)',
+          [
+            currentLocation.latitude.toString(),
+            currentLocation.longitude.toString(),
+            deviceid,
+            now.toString()
+          ]);
+      conn.close();
+      print('every three minutes daxiong');
     });
-    //FlutterBackgroundLocation.stopLocationService();
     //checkGPS();
   }
 
