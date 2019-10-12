@@ -7,6 +7,7 @@ import 'package:latlong/latlong.dart';
 import 'package:maplaos/model/alert.dart';
 import 'package:maplaos/model/check_location_near.dart';
 import 'package:maplaos/model/model_listlocation.dart';
+import 'package:maplaos/model/model_location_view.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:dio/dio.dart';
@@ -41,7 +42,6 @@ class _AddLocationState extends State<AddLocation> {
   var detail_en;
   var pro_id;
   void locationData(locationId) async {
-    listProvince();
     if (locationId != null) {
       final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
           host: setting.host,
@@ -67,20 +67,20 @@ class _AddLocationState extends State<AddLocation> {
           longtitudecurrent = location['longitude'];
           detail_la = location['deltails_la'];
           detail_en = location['deltails_en'];
-          pro_id=location['provinces_id'];
-          print( location['deltails_la']);
+          pro_id = location['provinces_id'];
+          print(location['deltails_la']);
         });
       }
       var districts = await conn
           .query('select * from districts where provinces_id=?', [pro_id]);
       for (var district in districts) {
         if (Localizations.localeOf(context).languageCode == "en") {
-        listdistricts.add(district['dis_name']);
-        districtMap[district['dis_name']] = district['id'];
-      } else {
-        listdistricts.add(district['dis_name_la']);
-        districtMap[district['dis_name_la']] = district['id'];
-      }
+          listdistricts.add(district['dis_name']);
+          districtMap[district['dis_name']] = district['id'];
+        } else {
+          listdistricts.add(district['dis_name_la']);
+          districtMap[district['dis_name_la']] = district['id'];
+        }
       }
       var photos = await conn
           .query('select * from photo where location_id=?', [locationId]);
@@ -88,14 +88,12 @@ class _AddLocationState extends State<AddLocation> {
         listphoto.add(photo['photo']);
       }
       setState(() {
-        listdistricts=listdistricts;
-        districtMap=districtMap;
+        listdistricts = listdistricts;
+        districtMap = districtMap;
         listphoto = listphoto;
       });
     }
-    setState(() {
-      isloading = false;
-    });
+    listProvince();
   }
 
   void listProvince() async {
@@ -115,6 +113,10 @@ class _AddLocationState extends State<AddLocation> {
         provincesMap[province['pro_name_la']] = province['id'];
       }
     }
+    conn.close();
+    setState(() {
+      isloading = false;
+    });
   }
 
   void listdistrict(var provincename) async {
@@ -136,6 +138,7 @@ class _AddLocationState extends State<AddLocation> {
         districtMap[district['dis_name_la']] = district['id'];
       }
     }
+    conn.close();
     setState(() {
       listdistricts = listdistricts;
       districtMap = districtMap;
@@ -321,8 +324,8 @@ class _AddLocationState extends State<AddLocation> {
     });
     await Dio().get('${setting.apiUrl}/textsearch');
   }
- 
-  void updatelocation() async{
+
+  void updatelocation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('userId');
     bool cansave = true;
@@ -335,35 +338,39 @@ class _AddLocationState extends State<AddLocation> {
     var data = _fbKey.currentState.value;
 
     var saveloca = await conn.query(
-          'update  location set latitude=?, longitude=?, loc_name=?,loc_name_la=?,type_location_id=?,provinces_id=?,districts_id=?,villages_id=?,user_id=? where id=?',
-          [
-            data['latitude'],
-            data['longtitude'],
-            data['loc_name'],
-            data['loc_name_la'],
-            null,
-            provincesMap[data['province_name']],
-            districtMap[data['district_name']],
-            null,
-            user_id,
-            locationId,
-          ]);
-      if (saveloca.insertId != null) {
-        await conn.query('delete from photo where location_id=?',[locationId]);
-        for (var photo in listphoto) {
-          var savephoto = await conn.query(
-              'insert into photo (photo, location_id) values (?, ?)',
-              [photo, locationId]);
-        }
-
-        await conn.query('delete from location_details where location_id=?',[locationId]);
-        var savedetail = await conn.query(
-            'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
-            [data['detail_en'], data['detail_la'], locationId]);
+        'update  location set latitude=?, longitude=?, loc_name=?,loc_name_la=?,type_location_id=?,provinces_id=?,districts_id=?,villages_id=?,user_id=? where id=?',
+        [
+          data['latitude'],
+          data['longtitude'],
+          data['loc_name'],
+          data['loc_name_la'],
+          null,
+          provincesMap[data['province_name']],
+          districtMap[data['district_name']],
+          null,
+          user_id,
+          locationId,
+        ]);
+    if (saveloca.insertId != null) {
+      await conn.query('delete from photo where location_id=?', [locationId]);
+      for (var photo in listphoto) {
+        var savephoto = await conn.query(
+            'insert into photo (photo, location_id) values (?, ?)',
+            [photo, locationId]);
       }
-      await Dio().get('${setting.apiUrl}/textsearch');
-      Navigator.of(context).pop();
+
+      await conn.query(
+          'delete from location_details where location_id=?', [locationId]);
+      var savedetail = await conn.query(
+          'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
+          [data['detail_en'], data['detail_la'], locationId]);
+    }
+    await Dio().get('${setting.apiUrl}/textsearch');
+    Navigator.of(context).pop();
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (_) => ModelLocationView(locationId)));
   }
+
   void removephoto(var photo) {
     setState(() {
       listphoto.remove(photo);
@@ -381,7 +388,6 @@ class _AddLocationState extends State<AddLocation> {
 
   @override
   Widget build(BuildContext context) {
-    print(loc_name_la);
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -580,14 +586,13 @@ class _AddLocationState extends State<AddLocation> {
                                       ? Center(
                                           child: CircularProgressIndicator(),
                                         )
-                                      : FloatingActionButton(
+                                      : RawMaterialButton(
                                           onPressed: () {
                                             if (_fbKey.currentState
                                                 .saveAndValidate()) {
-                                              if(locationId==null)
-                                              {
-                                              savelocation();
-                                              }else{
+                                              if (locationId == null) {
+                                                savelocation();
+                                              } else {
                                                 updatelocation();
                                               }
                                             }
@@ -596,7 +601,27 @@ class _AddLocationState extends State<AddLocation> {
                                             Icons.save,
                                             color: Colors.white,
                                           ),
+                                          shape: new CircleBorder(),
+                                          elevation: 2.0,
+                                          fillColor: Colors.red,
+                                          padding: const EdgeInsets.all(15.0),
                                         ),
+                                  /*FloatingActionButton(
+                                          onPressed: () {
+                                            if (_fbKey.currentState
+                                                .saveAndValidate()) {
+                                              if (locationId == null) {
+                                                savelocation();
+                                              } else {
+                                                updatelocation();
+                                              }
+                                            }
+                                          },
+                                          child: new Icon(
+                                            Icons.save,
+                                            color: Colors.white,
+                                          ),
+                                        ),*/
                                 ),
                               ),
                             ],

@@ -57,7 +57,11 @@ class _ModelListLocationState extends State<ModelListLocation> {
     var locationdele =
         await conn.query('delete from location where id=?', [id]);
   }
-
+Future<void> refresh() {
+    listlocation = List();
+    loadlistlocation();
+    return Future.value();
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -70,86 +74,90 @@ class _ModelListLocationState extends State<ModelListLocation> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).tr('List location')),
       ),
-      body: isloading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.separated(
-              itemCount: listlocation.length,
-              itemBuilder: (context, index) {
-                String name = listlocation[index]['status'].toString() == 'Open'
-                    ? AppLocalizations.of(context).tr('Public')
-                    : AppLocalizations.of(context).tr('Pedding');
-                final item = listlocation[index]['id'].toString();
-                return Dismissible(
-                    key: Key(item),
-                    onDismissed: (direction) {
-                      setState(() {
-                        deletelocation(listlocation[index]['id']);
-                        listlocation.removeAt(listlocation[index]);
-                      });
-                      // Then show a snackbar.
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text("$item dismissed")));
-                    },
-                    // Show a red background as the item is swiped away.
-                    background: Container(color: Colors.red),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                          backgroundImage: AssetImage('assets/map.png')),
-                      trailing: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ModelLocationView(
-                                    listlocation[index]['id']),
-                              ));
-                        },
-                        child: Icon(
-                          Icons.visibility,
-                          color: Colors.red,
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: isloading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView.separated(
+                itemCount: listlocation.length,
+                itemBuilder: (context, index) {
+                  String name =
+                      listlocation[index]['status'].toString() == 'Open'
+                          ? AppLocalizations.of(context).tr('Public')
+                          : AppLocalizations.of(context).tr('Pedding');
+                  final item = listlocation[index]['id'].toString();
+                  return Dismissible(
+                      key: Key(item),
+                      onDismissed: (direction) {
+                        setState(() {
+                          deletelocation(listlocation[index]['id']);
+                          listlocation.removeAt(listlocation[index]);
+                        });
+                        // Then show a snackbar.
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(content: Text("$item dismissed")));
+                      },
+                      // Show a red background as the item is swiped away.
+                      background: Container(color: Colors.red),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage: AssetImage('assets/map.png')),
+                        trailing: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ModelLocationView(
+                                      listlocation[index]['id']),
+                                ));
+                          },
+                          child: Icon(
+                            Icons.visibility,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      title: Localizations.localeOf(context).languageCode ==
-                              "en"
-                          ? Text(listlocation[index]['loc_name'].toString())
-                          : Text(listlocation[index]['loc_name_la'].toString()),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            AppLocalizations.of(context).tr('Latitude') +
-                                ": " +
-                                listlocation[index]['latitude'].toString(),
-                            style: TextStyle(fontSize: 10.0),
-                          ),
-                          Text(
-                            AppLocalizations.of(context).tr('Longtitude') +
-                                ": " +
-                                listlocation[index]['longitude'].toString(),
-                            style: TextStyle(fontSize: 10.0),
-                          ),
-                          Text(
-                            AppLocalizations.of(context).tr('Status') +
-                                ": $name",
-                            style: TextStyle(
-                                fontSize: 10.0,
-                                color:
-                                    listlocation[index]['status'].toString() ==
-                                            'Pedding'
-                                        ? Colors.red
-                                        : Colors.green),
-                          ),
-                        ],
-                      ),
-                    )
-                    );
-              },
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
-            ),
+                        title: Localizations.localeOf(context).languageCode ==
+                                "en"
+                            ? Text(listlocation[index]['loc_name'].toString())
+                            : Text(
+                                listlocation[index]['loc_name_la'].toString()),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              AppLocalizations.of(context).tr('Latitude') +
+                                  ": " +
+                                  listlocation[index]['latitude'].toString(),
+                              style: TextStyle(fontSize: 10.0),
+                            ),
+                            Text(
+                              AppLocalizations.of(context).tr('Longtitude') +
+                                  ": " +
+                                  listlocation[index]['longitude'].toString(),
+                              style: TextStyle(fontSize: 10.0),
+                            ),
+                            Text(
+                              AppLocalizations.of(context).tr('Status') +
+                                  ": $name",
+                              style: TextStyle(
+                                  fontSize: 10.0,
+                                  color: listlocation[index]['status']
+                                              .toString() ==
+                                          'Pedding'
+                                      ? Colors.red
+                                      : Colors.green),
+                            ),
+                          ],
+                        ),
+                      ));
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+              ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

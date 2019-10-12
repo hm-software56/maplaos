@@ -5,6 +5,7 @@ import 'package:latlong/latlong.dart';
 import 'package:maplaos/home.dart';
 import 'package:maplaos/model/about_us.dart';
 import 'package:maplaos/model/alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:maplaos/setting/setting.dart';
@@ -56,7 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  int days;
+  List locationnear = List();
   Future<void> _showNotification(var conn, var currentLocation) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+          
     var locations = await conn.query('select * from location  order by id ASC');
     for (var location in locations) {
       final Distance distance = new Distance();
@@ -65,8 +70,21 @@ class _HomeScreenState extends State<HomeScreen> {
           LatLng(currentLocation.latitude, currentLocation.longitude),
           LatLng(double.parse(location['latitude'].toString()),
               double.parse(location['longitude'].toString())));
-
+      var now = new DateTime.now();
+      days=now.day+now.month+now.year;
+      print(now.day+now.month+now.year);
+      print('wwwwwwwwwwwwwwww');
       if (meter < 1000) {
+        if (locationnear.contains(location['id'].toString()) && prefs.get('daynow')==days) {
+          print('wwwwqqqqqqqqq');
+          break;
+        } else {
+          print('xxxxxxxxxxxxxx');
+          prefs.setInt('daynow',days);
+          locationnear.add(location['id'].toString());
+          //break;
+        }
+
         var details = location['loc_name'].toString() +
             " Near you around " +
             meter.toString() +
@@ -84,8 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
         var iOSPlatformChannelSpecifics = IOSNotificationDetails();
         var platformChannelSpecifics = NotificationDetails(
             androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-        await flutterLocalNotificationsPlugin.show(
-            0, 'Maplaos', '$details', platformChannelSpecifics,
+        await flutterLocalNotificationsPlugin.show(0,
+            'Maplaos', '$details', platformChannelSpecifics,
             payload: 'item x');
         break;
       }
@@ -108,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     autocomplete();
     registerPush();
     var cron = new Cron();
-    cron.schedule(new Schedule.parse('*/1 * * * *'), () async {
+    cron.schedule(new Schedule.parse('*/10 * * * *'), () async {
       location.LocationData currentLocation =
           await location.Location().getLocation();
       final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
