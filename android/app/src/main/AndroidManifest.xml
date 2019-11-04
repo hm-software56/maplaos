@@ -12,10 +12,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE" />
     
-
+    <!-- android:name="io.flutter.app.FlutterApplication" -->
     <application
-        android:name="io.flutter.app.FlutterApplication"
-        android:label="maplaos"
+        android:name=".Application"
+        android:label="Map Tourism Laos"
         android:icon="@mipmap/launcher_icon">
         
         <activity
@@ -41,6 +41,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- firebase push-->
+            <intent-filter>
+                <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- end firebase push-->
+
         </activity>
         <meta-data 
                android:name="com.google.android.geo.API_KEY"

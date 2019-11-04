@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "231195634323",
+    "firebase_url": "https://daxiong56992726.firebaseio.com",
+    "project_id": "daxiong56992726",
+    "storage_bucket": "daxiong56992726.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231195634323:android:94ae958d017b91ba",
+        "android_client_info": {
+          "package_name": "com.hmsoftware.maplaos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "231195634323-7fvdi85i4n017avgkpqlnpr5pcb6rlcj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBl8W4Ie83JfIC14QUfwKgR89FzCsv5pGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "231195634323-7fvdi85i4n017avgkpqlnpr5pcb6rlcj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "231195634323-r3im9jhk6takfulrf4kcttc5mhmo067i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hmsoftware.maplaos"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

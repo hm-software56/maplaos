@@ -50,6 +50,7 @@ dependencies:
   loadmore: ^1.0.4
   cron: ^0.2.2
   flutter_local_notifications: ^0.8.4
+  firebase_messaging: ^5.1.6
 
 dev_dependencies:
   flutter_test:

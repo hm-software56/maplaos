@@ -13,6 +13,7 @@ import 'package:location/location.dart' as location;
 import 'package:device_id/device_id.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     new FlutterLocalNotificationsPlugin();
@@ -25,6 +26,28 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Setting setting = new Setting();
   bool connected = true;
+
+  // firebase push notifycation
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  void initFirebaseMessaging() {
+    firebaseMessaging.subscribeToTopic("all");
+    firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+      },
+    );
+
+    firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      print("Token : $token");
+    });
+  }
 
   Future onSelectNotification(String payload) async {
     if (payload != null) {
@@ -61,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List locationnear = List();
   Future<void> _showNotification(var conn, var currentLocation) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-          
+
     var locations = await conn.query('select * from location  order by id ASC');
     for (var location in locations) {
       final Distance distance = new Distance();
@@ -71,16 +94,17 @@ class _HomeScreenState extends State<HomeScreen> {
           LatLng(double.parse(location['latitude'].toString()),
               double.parse(location['longitude'].toString())));
       var now = new DateTime.now();
-      days=now.day+now.month+now.year;
-      print(now.day+now.month+now.year);
+      days = now.day + now.month + now.year;
+      print(now.day + now.month + now.year);
       print('wwwwwwwwwwwwwwww');
       if (meter < 1000) {
-        if (locationnear.contains(location['id'].toString()) && prefs.get('daynow')==days) {
+        if (locationnear.contains(location['id'].toString()) &&
+            prefs.get('daynow') == days) {
           print('wwwwqqqqqqqqq');
           break;
         } else {
           print('xxxxxxxxxxxxxx');
-          prefs.setInt('daynow',days);
+          prefs.setInt('daynow', days);
           locationnear.add(location['id'].toString());
           //break;
         }
@@ -102,8 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
         var iOSPlatformChannelSpecifics = IOSNotificationDetails();
         var platformChannelSpecifics = NotificationDetails(
             androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-        await flutterLocalNotificationsPlugin.show(0,
-            'Maplaos', '$details', platformChannelSpecifics,
+        await flutterLocalNotificationsPlugin.show(
+            0, 'Maplaos', '$details', platformChannelSpecifics,
             payload: 'item x');
         break;
       }
@@ -125,6 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     autocomplete();
     registerPush();
+    initFirebaseMessaging();
+
     var cron = new Cron();
     cron.schedule(new Schedule.parse('*/10 * * * *'), () async {
       location.LocationData currentLocation =
