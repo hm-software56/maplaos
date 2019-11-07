@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -293,6 +294,17 @@ class _HomeState extends State<Home> {
                               currentLocation_longitude,
                               currentLocation_latitude),
                           Loadimg(data['id']),
+                          /*Image.network('${setting.apiUrl}/showimg/foo.png',
+                              fit: BoxFit.cover),*/
+                          CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl:
+                                '${setting.apiUrl}/showimg/${data['id']}.png',
+                            placeholder: (context, url) =>
+                                new Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                                new Icon(Icons.error),
+                          )
                         ],
                       ),
                     ),
@@ -322,11 +334,16 @@ class _HomeState extends State<Home> {
         timeout: Duration(seconds: 8)));
     var results = await conn.query('select * from location_searchs');
     for (var re in results) {
-      String name=re['search_text'].toString().replaceAll("', ", ';').replaceAll("['", '').replaceAll("]'", '').replaceAll("'", '');
+      String name = re['search_text']
+          .toString()
+          .replaceAll("', ", ';')
+          .replaceAll("['", '')
+          .replaceAll("]'", '')
+          .replaceAll("'", '');
       setState(() {
-       list_autocomplete=name.split(";"); 
+        list_autocomplete = name.split(";");
       });
-     }
+    }
   }
 
   void _startSearch() {
@@ -437,7 +454,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget build(BuildContext context) {
-   // print(list_autocomplete);
+    // print(list_autocomplete);
     return Scaffold(
         //key: _scaffoldKey,
         drawer: menu,

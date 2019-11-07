@@ -64,7 +64,14 @@ def textsearch():
     photo = Location().textsearch()
     return photo
 
+
 @app.route('/sendnotification', methods=['GET'])
 def sendnotification():
     send_push = Pushnotification.sendnotification()
     return send_push
+
+
+@app.route('/generatechart', methods=['GET'])
+def generatechart():
+    chart = Location().generatechart()
+    return chart

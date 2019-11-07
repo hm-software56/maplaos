@@ -96,14 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
       var now = new DateTime.now();
       days = now.day + now.month + now.year;
       print(now.day + now.month + now.year);
-      print('wwwwwwwwwwwwwwww');
       if (meter < 1000) {
         if (locationnear.contains(location['id'].toString()) &&
             prefs.get('daynow') == days) {
-          print('wwwwqqqqqqqqq');
           break;
         } else {
-          print('xxxxxxxxxxxxxx');
           prefs.setInt('daynow', days);
           locationnear.add(location['id'].toString());
           //break;
@@ -119,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
             meter.toString() +
             "  ເມັດ";
         var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-            'maplaos', 'Maplaos', 'Detection tourist of laos',
+            'maplaos', 'Map Tourism Laos', 'Detection places tourism of Laos',
             importance: Importance.Max,
             priority: Priority.High,
             ticker: 'ticker');
@@ -127,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var platformChannelSpecifics = NotificationDetails(
             androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
-            0, 'Maplaos', '$details', platformChannelSpecifics,
+            0, 'Map Tourism Laos', '$details', platformChannelSpecifics,
             payload: 'item x');
         break;
       }
@@ -163,7 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
           db: setting.db,
           timeout: Duration(seconds: 3)));
       _showNotification(conn, currentLocation);
-
       var now = new DateTime.now();
       String deviceid = await DeviceId.getID;
       await conn.query(
@@ -188,9 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'ຍີ​ນດີ​ທ່ຽວເມືອງລາວ',
         style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
       ),
-
       image: new Image.asset('assets/logo.png'),
-      // gradientBackground:new LinearGradient(colors: [Colors.white, Colors.blue], begin: Alignment.topCenter, end: Alignment.bottomCenter),
       backgroundColor: Colors.white,
       styleTextUnderTheLoader: new TextStyle(),
       photoSize: 150.0,
