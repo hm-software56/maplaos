@@ -179,7 +179,7 @@ class _ModelLocationViewState extends State<ModelLocationView> {
           IconButton(
             icon: Icon(
               Icons.edit_location,
-              color: Colors.blue,
+              color: Colors.white,
             ),
             onPressed: () {
               Navigator.push(
