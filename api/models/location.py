@@ -57,8 +57,11 @@ class Location:
                 StartDate += delta1
             days = (tuple(dates))
             y_pos = np.arange(len(days))
+            plt.rcParams['axes.spines.right'] = False
+            plt.rcParams['axes.spines.top'] = False
             plt.figure(figsize=(10, 4))
             plt.plot(y_pos, data, color='r')
+            plt.title("ສະຖິຕິ/Statistics",fontname="Phetsarath OT",fontweight='bold',fontsize=20)
             plt.xticks(y_pos, days)
             plt.xticks(rotation=45)
             plt.savefig('/home/cbr/daxiong/api/images/'+str(location_id)+'.png',bbox_inches = "tight")

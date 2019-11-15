@@ -294,9 +294,13 @@ class _HomeState extends State<Home> {
                               currentLocation_longitude,
                               currentLocation_latitude),
                           Loadimg(data['id']),
+                          Image.network(
+                              '${setting.apiUrl}/showimg/${data['id']}.png',
+                              fit: BoxFit.cover),
+
                           /*Image.network('${setting.apiUrl}/showimg/foo.png',
                               fit: BoxFit.cover),*/
-                          CachedNetworkImage(
+                          /*CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl:
                                 '${setting.apiUrl}/showimg/${data['id']}.png',
@@ -304,7 +308,7 @@ class _HomeState extends State<Home> {
                                 new Center(child: CircularProgressIndicator()),
                             errorWidget: (context, url, error) =>
                                 new Icon(Icons.error),
-                          )
+                          )*/
                         ],
                       ),
                     ),
