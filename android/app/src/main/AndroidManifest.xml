@@ -15,7 +15,7 @@
     <!-- android:name="io.flutter.app.FlutterApplication" -->
     <application
         android:name=".Application"
-        android:label="Map Tourism Laos"
+        android:label="Map Tourism"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" 
         android:resource="@drawable/ic_launcher"/>
