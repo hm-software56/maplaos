@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
 import 'package:maplaos/model/direction_place.dart';
+import 'package:maplaos/model/home_slide.dart';
 import 'package:maplaos/model/loadimg.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
@@ -30,11 +32,14 @@ class _HomeState extends State<Home> {
   Setting setting = new Setting();
   bool isloading = true;
   String title = "Home";
-
+  var locations;
+  Map locationlistdetails = Map();
+  bool isnolocation = true;
   /*================ foreach multil maker ==============*/
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
   void addmultiMaker(var keysearch) async {
+    locationlistdetails.clear();
     /*========= get curent position and coordinate ==========*/
     //Position position  = await Geolocator().getCurrentPosition(desiredAccuracy:LocationAccuracy.best);
     location.LocationData currentLocation =
@@ -102,7 +107,7 @@ class _HomeState extends State<Home> {
       markers[markerId] = marker;
       */
       /*========== add location in to maker ========*/
-      var locations;
+
       if (find_search_step == 1) {
         locations = await conn.query(
             'select l.*,ld.id as detail_id,ld.details,ld.details_la from location as l left join location_details as ld on ld.location_id=l.id where l.provinces_id=? and latitude!=0',
@@ -117,6 +122,51 @@ class _HomeState extends State<Home> {
             [result['id']]);
       }
       for (var location in locations) {
+        isnolocation = false;
+        /*========= get data province by location ======*/
+        var provinces = await conn.query(
+            'select pro_name, pro_name_la from provinces  where id=?',
+            [location['provinces_id']]);
+        var pro_name;
+        var pro_name_la;
+        for (var province in provinces) {
+          pro_name = province['pro_name'].toString();
+          pro_name_la = province['pro_name_la'].toString();
+        }
+
+        /*========= get data district by location ======*/
+        var districts = await conn.query(
+            'select dis_name, dis_name_la from districts  where id=?',
+            [location['districts_id']]);
+        var dis_name;
+        var dis_name_la;
+        for (var district in districts) {
+          dis_name = district['dis_name'].toString();
+          dis_name_la = district['dis_name_la'].toString();
+        }
+
+        /*========= get photo by location ======*/
+        var photos = await conn.query(
+            'select photo from photo where location_id=? limit 1',
+            [location['id']]);
+        var photo_name = 'location_img.png';
+        for (var photo in photos) {
+          photo_name = photo['photo'].toString();
+        }
+
+        locationlistdetails[location["id"]] = {
+          "location_id": location["id"].toString(),
+          'location_name': location['loc_name'].toString(),
+          'location_name_la': location['loc_name_la'].toString(),
+          'latitude': location['latitude'],
+          'longitude': location['longitude'],
+          "pro_name": pro_name + ' Province',
+          "pro_name_la": "ແຂວງ " + pro_name_la,
+          "dis_name": dis_name + " District",
+          "dis_name_la": "ເມື່ອງ " + dis_name_la,
+          'photo_name': photo_name
+        };
+        // locationlistdetails.add(location["id"]);
         final MarkerId markerId = MarkerId('$location["id"]_1');
         // creating a new MARKER
         final Marker marker = Marker(
@@ -159,6 +209,8 @@ class _HomeState extends State<Home> {
 
     setState(() {
       isloading = false;
+      isnolocation = isnolocation;
+      locationlistdetails = locationlistdetails;
       setting.latitude = setting.latitude;
       setting.longitude = setting.longitude;
       markers = markers;
@@ -450,6 +502,79 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Widget slideFooter(Map locationdata) {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          SizedBox(
+            width: 8.0,
+          ),
+          Container(
+            color: Colors.white,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Image.network(
+                  '${setting.apiUrl}/showimg/${locationdata['photo_name']}'),
+            ),
+          ),
+          Container(
+              color: Colors.blueGrey,
+              width: 150,
+              alignment: Alignment.topLeft,
+              child: ListTile(
+                  title: Text(
+                    Localizations.localeOf(context).languageCode == "en"
+                        ? locationdata['location_name']
+                        : locationdata['location_name_la'],
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        Localizations.localeOf(context).languageCode == "en"
+                            ? locationdata['pro_name']
+                            : locationdata['pro_name_la'],
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        Localizations.localeOf(context).languageCode == "en"
+                            ? locationdata['dis_name']
+                            : locationdata['dis_name_la'],
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.0,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
+                  onTap: () {
+                    mapController.animateCamera(
+                      CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                            target: LatLng(locationdata['latitude'],
+                                locationdata['longitude']),
+                            zoom: 18.0),
+                        //target: LatLng(17.976794, 102.636504), zoom: 15.0),
+                      ),
+                    );
+                  }))
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -458,7 +583,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget build(BuildContext context) {
-    // print(list_autocomplete);
     return Scaffold(
         //key: _scaffoldKey,
         drawer: menu,
@@ -488,7 +612,7 @@ class _HomeState extends State<Home> {
                   markers: Set<Marker>.of(markers.values),
                   polylines: Set<Polyline>.of(polylines.values),
                 ),
-                Padding(
+                /*Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Align(
                     alignment: Alignment.bottomLeft,
@@ -500,7 +624,24 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
-                ),
+                ),*/
+                isnolocation
+                    ? CircularProgressIndicator()
+                    : Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Container(
+                          alignment: Alignment.topLeft,
+                          margin: EdgeInsets.symmetric(vertical: 2.0),
+                          height: 80.0,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: <Widget>[
+                              for (var keyvalue in locationlistdetails.keys)
+                                slideFooter(locationlistdetails[keyvalue]),
+                            ],
+                          ),
+                        ),
+                      )
               ]));
   }
 }
