@@ -523,8 +523,21 @@ class _HomeState extends State<Home> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10.0),
                   bottomLeft: Radius.circular(10.0)),
-              child: Image.network(
-                  '${setting.apiUrl}/showimg/${locationdata['photo_name']}'),
+              child: InkWell(
+                  onTap: () {
+                    mapController.animateCamera(
+                      CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                            target: LatLng(locationdata['latitude'],
+                                locationdata['longitude']),
+                            zoom: 18.0),
+                        //target: LatLng(17.976794, 102.636504), zoom: 15.0),
+                      ),
+                    );
+                  },
+                  child: Image.network(
+                    '${setting.apiUrl}/showimg/${locationdata['photo_name']}',
+                  )),
             ),
           ),
           Container(

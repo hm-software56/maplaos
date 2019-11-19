@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
       var now = new DateTime.now();
       days = now.day + now.month + now.year;
       print(now.day + now.month + now.year);
-      if (meter < 1000) {
+      if (meter <= setting.pushNotifycationByMeterNearYou) {
         if (locationnear.contains(location['id'].toString()) &&
             prefs.get('daynow') == days) {
           break;
@@ -105,16 +105,29 @@ class _HomeScreenState extends State<HomeScreen> {
           locationnear.add(location['id'].toString());
           //break;
         }
-
-        var details = location['loc_name'].toString() +
-            " Near you around " +
-            meter.toString() +
-            " meter" +
-            "\t\t" +
-            location['loc_name_la'] +
-            " ຢູ່​ໃກ້​ທ່ານ​ປະ​ມານ " +
-            meter.toString() +
-            "  ເມັດ";
+        var details;
+        double km_or_m = meter / 1000;
+        if (km_or_m >= 1) {
+          details = location['loc_name'].toString() +
+              " Near you around " +
+              km_or_m.toString() +
+              " KM" +
+              "\t\t" +
+              location['loc_name_la'] +
+              " ຢູ່​ໃກ້​ທ່ານ​ປະ​ມານ " +
+              km_or_m.toString() +
+              "  ກິ​ໂລ​ເມັດ";
+        } else {
+          details = location['loc_name'].toString() +
+              " Near you around " +
+              meter.toString() +
+              " Meter" +
+              "\t\t" +
+              location['loc_name_la'] +
+              " ຢູ່​ໃກ້​ທ່ານ​ປະ​ມານ " +
+              meter.toString() +
+              "  ເມັດ";
+        }
         var androidPlatformChannelSpecifics = AndroidNotificationDetails(
             'maplaos', 'Map Tourism Laos', 'Detection places tourism of Laos',
             importance: Importance.Max,
