@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
 import 'package:maplaos/model/direction_place.dart';
-import 'package:maplaos/model/home_slide.dart';
 import 'package:maplaos/model/loadimg.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
@@ -154,6 +151,15 @@ class _HomeState extends State<Home> {
           photo_name = photo['photo'].toString();
         }
 
+        /*========= get photo by location ======*/
+        var countvisits = await conn.query(
+            'SELECT COUNT(id) as count FROM tracking_visitor WHERE location_id=?',
+            [location['id']]);
+        var count_location = 0;
+        for (var countvisit in countvisits) {
+          count_location = countvisit['count'];
+        }
+
         locationlistdetails[location["id"]] = {
           "location_id": location["id"].toString(),
           'location_name': location['loc_name'].toString(),
@@ -164,7 +170,8 @@ class _HomeState extends State<Home> {
           "pro_name_la": "ແຂວງ " + pro_name_la,
           "dis_name": dis_name + " District",
           "dis_name_la": "ເມື່ອງ " + dis_name_la,
-          'photo_name': photo_name
+          'photo_name': photo_name,
+          'count_location': count_location
         };
         // locationlistdetails.add(location["id"]);
         final MarkerId markerId = MarkerId('$location["id"]_1');
@@ -504,6 +511,7 @@ class _HomeState extends State<Home> {
 
   Widget slideFooter(Map locationdata) {
     return Container(
+      padding: EdgeInsets.only(bottom: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -511,9 +519,10 @@ class _HomeState extends State<Home> {
             width: 8.0,
           ),
           Container(
-            color: Colors.white,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10.0),
+                  bottomLeft: Radius.circular(10.0)),
               child: Image.network(
                   '${setting.apiUrl}/showimg/${locationdata['photo_name']}'),
             ),
@@ -556,6 +565,58 @@ class _HomeState extends State<Home> {
                           fontSize: 10.0,
                           color: Colors.white,
                         ),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          for (var i = 1; i <= 5; i++)
+                            Icon(
+                              Icons.star,
+                              color: i == 1 &&
+                                      (locationdata['count_location'] > 1)
+                                  ? Colors.amber
+                                  : i == 2 &&
+                                          locationdata['count_location'] > 20
+                                      ? Colors.amber
+                                      : i == 3 &&
+                                              locationdata['count_location'] >
+                                                  40
+                                          ? Colors.amber
+                                          : i == 4 &&
+                                                  locationdata[
+                                                          'count_location'] >
+                                                      60
+                                              ? Colors.amber
+                                              : i == 5 &&
+                                                      locationdata[
+                                                              'count_location'] >
+                                                          80
+                                                  ? Colors.amber
+                                                  : Colors.white70,
+                              size: 16.0,
+                            ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Icon(
+                            Icons.visibility,
+                            color: Colors.green,
+                            size: 14.0,
+                          ),
+                          Text(
+                            " " +
+                                locationdata['count_location'].toString() +
+                                ' views',
+                            style: TextStyle(
+                              fontSize: 10.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       )
                     ],
                   ),
@@ -612,27 +673,30 @@ class _HomeState extends State<Home> {
                   markers: Set<Marker>.of(markers.values),
                   polylines: Set<Polyline>.of(polylines.values),
                 ),
-                /*Padding(
+                Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: new FloatingActionButton(
-                      onPressed: _onMapTypeButtonPressed,
-                      child: new Icon(
-                        Icons.map,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),*/
+                      alignment: Alignment.topLeft,
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: FloatingActionButton(
+                          onPressed: _onMapTypeButtonPressed,
+                          child: new Icon(
+                            Icons.map,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )),
+                ),
                 isnolocation
-                    ? CircularProgressIndicator()
+                    ? Text('')
                     : Align(
                         alignment: Alignment.bottomLeft,
                         child: Container(
                           alignment: Alignment.topLeft,
                           margin: EdgeInsets.symmetric(vertical: 2.0),
-                          height: 80.0,
+                          height: 90.0,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: <Widget>[
