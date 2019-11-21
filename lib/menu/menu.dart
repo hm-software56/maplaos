@@ -366,14 +366,14 @@ class _MenuState extends State<Menu> {
                             '${setting.apiUrl}/showimg/${photo_profile}'),
                   )),
               accountName: Text(
-                '$first_name',
+                first_name == null ? '' : '$first_name',
                 style: TextStyle(
                     fontSize: 25.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
               accountEmail: Text(
-                '$last_name',
+                first_name == null ? '' : '$last_name',
                 style: TextStyle(color: Colors.white),
               ),
             ),

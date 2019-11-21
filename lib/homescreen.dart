@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               double.parse(location['longitude'].toString())));
       var now = new DateTime.now();
       days = now.day + now.month + now.year;
-      print(now.day + now.month + now.year);
+      //print(now.day + now.month + now.year);
       if (meter <= setting.pushNotifycationByMeterNearYou) {
         bool pushHas = false;
         if (locationnear.contains(location['id'].toString()) &&
