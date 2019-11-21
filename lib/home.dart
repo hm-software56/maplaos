@@ -7,6 +7,7 @@ import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
 import 'package:maplaos/model/direction_place.dart';
 import 'package:maplaos/model/loadimg.dart';
+import 'package:maplaos/model/viewdetails_location.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
@@ -294,7 +295,8 @@ class _HomeState extends State<Home> {
                                         MaterialPageRoute(
                                             fullscreenDialog: true,
                                             builder: (context) =>
-                                                Locationimg(data['id'])))
+                                                ViewDetailsLocation(
+                                                    data['id'])))
                                   },
                                   //color: Colors.white,
                                   padding: EdgeInsets.all(10.0),
@@ -302,11 +304,11 @@ class _HomeState extends State<Home> {
                                     // Replace with a Row for horizontal icon + text
                                     children: <Widget>[
                                       Icon(
-                                        Icons.touch_app,
+                                        Icons.list,
                                         color: Colors.red,
                                       ),
                                       Text(AppLocalizations.of(context)
-                                          .tr("Subscribe"))
+                                          .tr("Details"))
                                     ],
                                   ),
                                 ),
@@ -356,18 +358,6 @@ class _HomeState extends State<Home> {
                           Image.network(
                               '${setting.apiUrl}/showimg/${data['id']}.png',
                               fit: BoxFit.cover),
-
-                          /*Image.network('${setting.apiUrl}/showimg/foo.png',
-                              fit: BoxFit.cover),*/
-                          /*CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl:
-                                '${setting.apiUrl}/showimg/${data['id']}.png',
-                            placeholder: (context, url) =>
-                                new Center(child: CircularProgressIndicator()),
-                            errorWidget: (context, url, error) =>
-                                new Icon(Icons.error),
-                          )*/
                         ],
                       ),
                     ),

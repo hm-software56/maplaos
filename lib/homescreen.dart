@@ -97,9 +97,10 @@ class _HomeScreenState extends State<HomeScreen> {
       days = now.day + now.month + now.year;
       print(now.day + now.month + now.year);
       if (meter <= setting.pushNotifycationByMeterNearYou) {
+        bool pushHas = false;
         if (locationnear.contains(location['id'].toString()) &&
             prefs.get('daynow') == days) {
-          break;
+          pushHas = true;
         } else {
           prefs.setInt('daynow', days);
           locationnear.add(location['id'].toString());
@@ -128,18 +129,21 @@ class _HomeScreenState extends State<HomeScreen> {
               meter.toString() +
               "  ເມັດ";
         }
-        var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-            'maplaos', 'Map Tourism Laos', 'Detection places tourism of Laos',
-            importance: Importance.Max,
-            priority: Priority.High,
-            ticker: 'ticker');
-        var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-        var platformChannelSpecifics = NotificationDetails(
-            androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-        await flutterLocalNotificationsPlugin.show(
-            0, 'Map Tourism Laos', '$details', platformChannelSpecifics,
-            payload: 'item x');
-        break;
+        if (pushHas == false) {
+          var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+              'maplaos', 'Map Tourism Laos', 'Detection places tourism of Laos',
+              importance: Importance.Max,
+              priority: Priority.High,
+              style: AndroidNotificationStyle.BigText,
+              ticker: 'ticker');
+          var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+          var platformChannelSpecifics = NotificationDetails(
+              androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+          await flutterLocalNotificationsPlugin.show(
+              0, 'Map Tourism Laos', '$details', platformChannelSpecifics,
+              payload: 'item x');
+          break;
+        }
       }
     }
   }

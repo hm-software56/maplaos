@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:maplaos/model/viewimg_fullscreen.dart';
 import 'package:maplaos/setting/setting.dart';
 
 class Loadimg extends StatefulWidget {
@@ -45,13 +46,22 @@ class _LoadimgState extends State<Loadimg> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    imageUrl: '${setting.apiUrl}/showimg/$photo',
-                    placeholder: (context, url) =>
-                        new Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => new Icon(Icons.error),
-                  ),
+                  child: GestureDetector(
+                      onTap: () {
+                        print(photo);
+                        print('sdsssssss');
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return ViewIMGFullSceen(photo);
+                        }));
+                      },
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        imageUrl: '${setting.apiUrl}/showimg/$photo',
+                        placeholder: (context, url) =>
+                            new Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) =>
+                            new Icon(Icons.error),
+                      )),
                 ),
               ),
           ]);

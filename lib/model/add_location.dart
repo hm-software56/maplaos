@@ -50,7 +50,7 @@ class _AddLocationState extends State<AddLocation> {
           password: setting.password,
           db: setting.db));
       var locations = await conn.query(
-          'select * from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?',
+          'select location.*, pro_name,pro_name_la,dis_name,dis_name_la from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?',
           [locationId]);
       for (var location in locations) {
         setState(() {
