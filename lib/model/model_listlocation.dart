@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:maplaos/model/add_location.dart';
 import 'package:maplaos/model/alert.dart';
+import 'package:maplaos/model/choose_place.dart';
 import 'package:maplaos/model/model_location_view.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
@@ -298,7 +299,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddLocation(null),
+                builder: (context) => DragMarkerMap(),
               ));
         },
         child: Icon(Icons.add),

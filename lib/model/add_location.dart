@@ -213,17 +213,11 @@ class _AddLocationState extends State<AddLocation> {
 
   double latitudecurrent;
   double longtitudecurrent;
-  bool isgetcurrent = true;
   void getcurrentlocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      isgetcurrent = false;
-    });
-    location.LocationData currentLocation =
-        await location.Location().getLocation();
-    setState(() {
-      longtitudecurrent = currentLocation.longitude;
-      latitudecurrent = currentLocation.latitude;
-      isgetcurrent = true;
+      longtitudecurrent = prefs.get('long');
+      latitudecurrent = prefs.get('lat');
     });
   }
 
@@ -382,6 +376,7 @@ class _AddLocationState extends State<AddLocation> {
     // TODO: implement initState
     super.initState();
     locationData(locationId);
+    getcurrentlocation();
 
     //locationNear.checknear();
   }
@@ -479,58 +474,49 @@ class _AddLocationState extends State<AddLocation> {
                           Padding(
                             padding: EdgeInsets.all(10),
                           ),
-                          isgetcurrent
-                              ? Column(
-                                  children: <Widget>[
-                                    FormBuilderTextField(
-                                      attribute: "latitude",
-                                      decoration: InputDecoration(
-                                          labelText:
-                                              AppLocalizations.of(context)
-                                                  .tr('Latitude')),
-                                      initialValue: latitudecurrent != null
-                                          ? '$latitudecurrent'
-                                          : '',
-                                      validators: [
-                                        FormBuilderValidators.required(),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(10),
-                                    ),
-                                    FormBuilderTextField(
-                                      attribute: "longtitude",
-                                      initialValue: longtitudecurrent != null
-                                          ? '$longtitudecurrent'
-                                          : '',
-                                      decoration: InputDecoration(
-                                          labelText:
-                                              AppLocalizations.of(context)
-                                                  .tr('Longtitude')),
-                                      validators: [
-                                        FormBuilderValidators.required(),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(2),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: InkWell(
-                                          child: new Text(
-                                              AppLocalizations.of(context).tr(
-                                                  'Click get current location')),
-                                          onTap: () {
-                                            getcurrentlocation();
-                                          }),
-                                    ),
-                                  ],
-                                )
-                              : SizedBox(
-                                  height: 140,
-                                  child: Center(
-                                      child: CircularProgressIndicator()),
-                                ),
+                          Column(
+                            children: <Widget>[
+                              FormBuilderTextField(
+                                attribute: "latitude",
+                                decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(context)
+                                        .tr('Latitude')),
+                                initialValue: latitudecurrent != null
+                                    ? '$latitudecurrent'
+                                    : '',
+                                validators: [
+                                  FormBuilderValidators.required(),
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(10),
+                              ),
+                              FormBuilderTextField(
+                                attribute: "longtitude",
+                                initialValue: longtitudecurrent != null
+                                    ? '$longtitudecurrent'
+                                    : '',
+                                decoration: InputDecoration(
+                                    labelText: AppLocalizations.of(context)
+                                        .tr('Longtitude')),
+                                validators: [
+                                  FormBuilderValidators.required(),
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(2),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: InkWell(
+                                    child: new Text(AppLocalizations.of(context)
+                                        .tr('Click get current location')),
+                                    onTap: () {
+                                      getcurrentlocation();
+                                    }),
+                              ),
+                            ],
+                          ),
                           Padding(
                             padding: EdgeInsets.all(10),
                           ),

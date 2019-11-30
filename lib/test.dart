@@ -1,42 +1,109 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:async';
 
-class Test extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class DragMarkerMap1 extends StatefulWidget {
   @override
-  _TestState createState() => _TestState();
+  _DragMarkerMap1State createState() => _DragMarkerMap1State();
 }
 
-class _TestState extends State<Test> {
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
-  void initFirebaseMessaging() {
-    firebaseMessaging.subscribeToTopic("all");
-    firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-      },
-    );
+class _DragMarkerMap1State extends State<DragMarkerMap1> {
+  Completer<GoogleMapController> _controller = Completer();
 
-    firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print("Token : $token");
+  static const LatLng _center = const LatLng(45.521563, -122.677433);
+
+  Set<Marker> _markers = {};
+
+  LatLng _lastMapPosition = _center;
+
+  MapType _currentMapType = MapType.normal;
+
+  void _onMapTypeButtonPressed() {
+    setState(() {
+      _currentMapType = _currentMapType == MapType.normal
+          ? MapType.satellite
+          : MapType.normal;
     });
   }
 
-  @override
-  initState() {
-    initFirebaseMessaging();
-    super.initState();
+  void _onAddMarkerButtonPressed() {
+    setState(() {
+      _markers.add(Marker(
+        // This marker id can be anything that uniquely identifies each marker.
+        markerId: MarkerId('marker_id'),
+        draggable: true,
+        position: _lastMapPosition,
+        infoWindow: InfoWindow(
+          title: 'Custom Marker',
+          snippet: 'Inducesmile.com',
+        ),
+        icon: BitmapDescriptor.defaultMarker,
+      ));
+    });
   }
 
+  void _onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+    CameraPosition newPos = CameraPosition(target: position.target);
+    Marker marker = _markers.first;
+
+    setState(() {
+      _markers.first.copyWith(positionParam: newPos.target);
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _controller.complete(controller);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('ddddddddddd'),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Select location'),
+          backgroundColor: Colors.red,
+        ),
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              onMapCreated: _onMapCreated,
+              myLocationEnabled: true,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 11.0,
+              ),
+              mapType: _currentMapType,
+              markers: _markers,
+              onCameraMove: _onCameraMove,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Column(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      onPressed: _onMapTypeButtonPressed,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                      backgroundColor: Colors.green,
+                      child: const Icon(Icons.map, size: 36.0),
+                    ),
+                    SizedBox(height: 16.0),
+                    FloatingActionButton(
+                      onPressed: _onAddMarkerButtonPressed,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                      backgroundColor: Colors.green,
+                      child: const Icon(Icons.add_location, size: 36.0),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
