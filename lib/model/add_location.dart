@@ -16,6 +16,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' as location;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'choose_place.dart';
+
 class AddLocation extends StatefulWidget {
   int locationId;
   AddLocation(this.locationId);
@@ -282,11 +284,16 @@ class _AddLocationState extends State<AddLocation> {
       }
     }
     if (cansave) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      longtitudecurrent = prefs.get('long');
+      latitudecurrent = prefs.get('lat');
+      prefs.remove('lat');
+      prefs.remove('long');
       var saveloca = await conn.query(
           'insert into location (latitude, longitude, loc_name,loc_name_la,type_location_id,provinces_id,districts_id,villages_id,user_id,status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            data['latitude'],
-            data['longtitude'],
+            longtitudecurrent,
+            latitudecurrent,
             data['loc_name'],
             data['loc_name_la'],
             null,
@@ -322,6 +329,10 @@ class _AddLocationState extends State<AddLocation> {
   void updatelocation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('userId');
+    longtitudecurrent = prefs.get('long');
+    latitudecurrent = prefs.get('lat');
+    prefs.remove('lat');
+    prefs.remove('long');
     bool cansave = true;
     final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
         host: setting.host,
@@ -334,8 +345,8 @@ class _AddLocationState extends State<AddLocation> {
     var saveloca = await conn.query(
         'update  location set latitude=?, longitude=?, loc_name=?,loc_name_la=?,type_location_id=?,provinces_id=?,districts_id=?,villages_id=?,user_id=? where id=?',
         [
-          data['latitude'],
-          data['longtitude'],
+          latitudecurrent,
+          longtitudecurrent,
           data['loc_name'],
           data['loc_name_la'],
           null,
@@ -477,6 +488,7 @@ class _AddLocationState extends State<AddLocation> {
                           Column(
                             children: <Widget>[
                               FormBuilderTextField(
+                                enabled: false,
                                 attribute: "latitude",
                                 decoration: InputDecoration(
                                     labelText: AppLocalizations.of(context)
@@ -492,6 +504,7 @@ class _AddLocationState extends State<AddLocation> {
                                 padding: EdgeInsets.all(10),
                               ),
                               FormBuilderTextField(
+                                enabled: false,
                                 attribute: "longtitude",
                                 initialValue: longtitudecurrent != null
                                     ? '$longtitudecurrent'
@@ -503,22 +516,36 @@ class _AddLocationState extends State<AddLocation> {
                                   FormBuilderValidators.required(),
                                 ],
                               ),
-                              Padding(
-                                padding: EdgeInsets.all(2),
-                              ),
                               Align(
                                 alignment: Alignment.centerRight,
-                                child: InkWell(
+                                child: FlatButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DragMarkerMap(latitudecurrent,
+                                                      longtitudecurrent),
+                                              fullscreenDialog: true));
+                                    },
+                                    icon: Icon(Icons.map),
+                                    label: Text(AppLocalizations.of(context)
+                                        .tr('Click change location'))),
+                                /*child: InkWell(
                                     child: new Text(AppLocalizations.of(context)
-                                        .tr('Click get current location')),
+                                        .tr('Click change location')),
                                     onTap: () {
-                                      getcurrentlocation();
-                                    }),
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DragMarkerMap(latitudecurrent,
+                                                      longtitudecurrent),
+                                              fullscreenDialog: true));
+                                      //getcurrentlocation();
+                                    }),*/
                               ),
                             ],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(10),
                           ),
                           FormBuilderTextField(
                             initialValue: detail_la,

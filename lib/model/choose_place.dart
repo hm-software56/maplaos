@@ -7,11 +7,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class DragMarkerMap extends StatefulWidget {
+  double lat;
+  double long;
+  DragMarkerMap(this.lat, this.long);
   @override
-  _DragMarkerMapState createState() => _DragMarkerMapState();
+  _DragMarkerMapState createState() => _DragMarkerMapState(this.lat, this.long);
 }
 
 class _DragMarkerMapState extends State<DragMarkerMap> {
+  double lat;
+  double long;
+  _DragMarkerMapState(this.lat, this.long);
+
   Completer<GoogleMapController> _controller = Completer();
 
   static LatLng _center = LatLng(45.521563, -122.677433);
@@ -26,12 +33,24 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
   bool isgetcurrent = true;
   void getcurrentlocation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    location.LocationData currentLocation =
-        await location.Location().getLocation();
-    prefs.setDouble('lat', currentLocation.latitude);
-    prefs.setDouble('long', currentLocation.longitude);
+    if (lat == null || long == null) {
+      location.LocationData currentLocation =
+          await location.Location().getLocation();
+      prefs.setDouble('lat', currentLocation.latitude);
+      prefs.setDouble('long', currentLocation.longitude);
+    } else {
+      prefs.setDouble('lat', lat);
+      prefs.setDouble('long', long);
+    }
+
     setState(() {
-      _center = LatLng(currentLocation.latitude, currentLocation.longitude);
+      _markers = {
+        Marker(
+          markerId: MarkerId('marker_id'),
+          position: LatLng(prefs.getDouble('lat'), prefs.getDouble('long')),
+        )
+      };
+      _center = LatLng(prefs.getDouble('lat'), prefs.getDouble('long'));
       isgetcurrent = false;
     });
   }
@@ -44,9 +63,11 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
     });
   }
 
-  void _updatePosition(CameraPosition _position) {
-    print(
-        'inside updatePosition ${_position.target.latitude} ${_position.target.longitude}');
+  void _updatePosition(CameraPosition _position) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('lat', _position.target.latitude);
+    prefs.setDouble('long', _position.target.longitude);
+
     Marker marker = _markers.firstWhere(
         (p) => p.markerId == MarkerId('marker_id'),
         orElse: () => null);
