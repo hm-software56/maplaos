@@ -9,15 +9,17 @@ import 'package:easy_localization/easy_localization.dart';
 class DragMarkerMap extends StatefulWidget {
   double lat;
   double long;
-  DragMarkerMap(this.lat, this.long);
+  int locationId;
+  DragMarkerMap(this.lat, this.long, this.locationId);
   @override
-  _DragMarkerMapState createState() => _DragMarkerMapState(this.lat, this.long);
+  _DragMarkerMapState createState() => _DragMarkerMapState(this.lat, this.long, this.locationId);
 }
 
 class _DragMarkerMapState extends State<DragMarkerMap> {
   double lat;
   double long;
-  _DragMarkerMapState(this.lat, this.long);
+  int locationId;
+  _DragMarkerMapState(this.lat, this.long, this.locationId);
 
   Completer<GoogleMapController> _controller = Completer();
 
@@ -29,7 +31,6 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
 
   MapType _currentMapType = MapType.normal;
 
-  int locationID;
   /*================ Loading current location  =================*/
   bool isgetcurrent = true;
   void getcurrentlocation() async {
@@ -45,7 +46,6 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
     }
 
     setState(() {
-      locationID = prefs.getInt('locationID');
       _markers = {
         Marker(
           markerId: MarkerId('marker_id'),
@@ -55,7 +55,6 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
       _center = LatLng(prefs.getDouble('lat'), prefs.getDouble('long'));
       isgetcurrent = false;
     });
-    prefs.remove('locationID'); // after set location ID and remove sessetion
   }
 
   void _onMapTypeButtonPressed() {
@@ -151,7 +150,7 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddLocation(locationID),
+                                  builder: (context) => AddLocation(locationId),
                                 ));
                           },
                           child: Icon(Icons.navigate_next),
