@@ -29,6 +29,7 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
 
   MapType _currentMapType = MapType.normal;
 
+  int locationID;
   /*================ Loading current location  =================*/
   bool isgetcurrent = true;
   void getcurrentlocation() async {
@@ -44,6 +45,7 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
     }
 
     setState(() {
+      locationID = prefs.getInt('locationID');
       _markers = {
         Marker(
           markerId: MarkerId('marker_id'),
@@ -53,6 +55,7 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
       _center = LatLng(prefs.getDouble('lat'), prefs.getDouble('long'));
       isgetcurrent = false;
     });
+    prefs.remove('locationID'); // after set location ID and remove sessetion
   }
 
   void _onMapTypeButtonPressed() {
@@ -148,7 +151,7 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddLocation(null),
+                                  builder: (context) => AddLocation(locationID),
                                 ));
                           },
                           child: Icon(Icons.navigate_next),

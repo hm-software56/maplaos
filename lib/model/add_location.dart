@@ -44,6 +44,8 @@ class _AddLocationState extends State<AddLocation> {
   var detail_en;
   var pro_id;
   void locationData(locationId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('locationID', locationId);
     if (locationId != null) {
       final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
           host: setting.host,
