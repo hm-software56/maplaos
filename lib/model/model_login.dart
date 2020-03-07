@@ -103,8 +103,9 @@ class _ModelLoginState extends State<ModelLogin> {
                           padding: EdgeInsets.all(20),
                         ),
                         FormBuilderTextField(
-                          attribute: "password",
                           obscureText: true,
+                          maxLines: 1,
+                          attribute: "password",
                           decoration: InputDecoration(
                               labelText: AppLocalizations.of(context).tr("Password")),
                           validators: [

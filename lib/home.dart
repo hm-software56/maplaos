@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:maplaos/locationimg.dart';
 import 'package:maplaos/menu/menu.dart';
 import 'package:maplaos/model/direction_place.dart';
 import 'package:maplaos/model/loadimg.dart';
@@ -49,8 +48,7 @@ class _HomeState extends State<Home> {
     var name;
     if (keysearch == null) {
       try {
-        var addresses =
-            await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        var addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
         var first = addresses.first;
         name = first.adminArea;
       } catch (c) {
