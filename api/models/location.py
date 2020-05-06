@@ -1,9 +1,10 @@
 from flask import jsonify
 import config
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import os
+# matplotlib.use('Agg')
+# from matplotlib.pyplot import plot as plt
 from datetime import timedelta, date
 
 
@@ -41,17 +42,19 @@ class Location:
         Current_Date = date.today()
         Start_Date = Current_Date + timedelta(days=-6)
         delta = Current_Date - Start_Date
-        
-        cur.execute("SELECT DISTINCT(location_id) as location_id FROM tracking_visitor WHERE date(date)>=%s and date(date)<=%s", (str(
-                Start_Date.strftime("%Y-%m-%d")), str(Current_Date.strftime("%Y-%m-%d"))))
+
+        cur.execute(
+            "SELECT DISTINCT(location_id) as location_id FROM tracking_visitor WHERE date(date)>=%s and date(date)<=%s",
+            (str(Start_Date.strftime("%Y-%m-%d")), str(Current_Date.strftime("%Y-%m-%d"))))
         for location in cur.fetchall():
             data = []
             dates = []
-            StartDate=Start_Date
+            StartDate = Start_Date
             delta1 = timedelta(days=1)
-            location_id=location[0]
+            location_id = location[0]
             while StartDate <= Current_Date:
-                count=cur.execute("SELECT * FROM tracking_visitor WHERE location_id=%s and date(date)=%s", (location_id, StartDate.strftime("%Y-%m-%d")))
+                count = cur.execute("SELECT * FROM tracking_visitor WHERE location_id=%s and date(date)=%s",
+                                    (location_id, StartDate.strftime("%Y-%m-%d")))
                 data.append(int(count))
                 dates.append(StartDate.strftime("%Y-%m-%d"))
                 StartDate += delta1
@@ -61,11 +64,11 @@ class Location:
             plt.rcParams['axes.spines.top'] = False
             plt.figure(figsize=(10, 4))
             plt.plot(y_pos, data, color='r')
-            plt.title("ສະຖິຕິ/Statistics",fontname="Phetsarath OT",fontweight='bold',fontsize=20)
+            plt.title("ສະຖິຕິ/Statistics", fontname="Phetsarath OT", fontweight='bold', fontsize=20)
             plt.xticks(y_pos, days)
             plt.xticks(rotation=45)
-            plt.savefig('/home/cbr/daxiong/api/images/'+str(location_id)+'.png',bbox_inches = "tight")
-            #plt.savefig('D:/Projectmobile/maplaos/api/images/'+str(location_id)+'.png',bbox_inches = "tight")
+            plt.savefig('/home/cbr/python/api/images/' + str(location_id) + '.png', bbox_inches="tight")
+            # plt.savefig('D:/Projectmobile/maplaos/api/images/'+str(location_id)+'.png',bbox_inches = "tight")
             plt.close()
         cur.close()
         return jsonify('true')

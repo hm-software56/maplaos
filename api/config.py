@@ -1,8 +1,8 @@
 
 import pymysql
-MYSQL_HOST = '183.182.107.122'
-#MYSQL_HOST = '192.168.100.247'
-MYSQL_USER = 'daxiong'
+MYSQL_HOST = 'localhost'
+#MYSQL_HOST = '192.168.43.114'
+MYSQL_USER = 'root'
 MYSQL_PASSWORD = 'Da123!@#'
 MYSQL_DB = 'maplaos_db'
 

@@ -10,7 +10,7 @@ class Setting {
   var db = '2CEvh1t8JM';
   */
   var host = hosturl;
-  var user = 'daxiong';
+  var user = 'root';
   var password = 'Da123!@#';
   var db = 'maplaos_db';
   int port = 3306;
