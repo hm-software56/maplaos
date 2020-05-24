@@ -92,9 +92,9 @@ class _ModelProfileState extends State<ModelProfile> {
             builder: (BuildContext context) {
               return RichAlertDialog(
                 //uses the custom alert dialog
-                alertTitle: richTitle(AppLocalizations.of(context).tr('Successed')),
+                alertTitle: richTitle(('Successed').tr()),
                 alertSubtitle:
-                    richSubtitle(AppLocalizations.of(context).tr("Click button below")),
+                    richSubtitle(("Click button below").tr()),
                 alertType: RichAlertType.SUCCESS,
                 actions: <Widget>[
                   IconButton(
@@ -122,7 +122,7 @@ class _ModelProfileState extends State<ModelProfile> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text(AppLocalizations.of(context).tr('Profile'),
+            child: Text(('Profile').tr(),
           textAlign: TextAlign.center,
         )),
       ),
@@ -138,10 +138,10 @@ class _ModelProfileState extends State<ModelProfile> {
                   FormBuilderTextField(
                     attribute: "first_name",
                     initialValue:'$first_name',
-                    decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('First name')),
+                    decoration: InputDecoration(labelText:('First name').tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:AppLocalizations.of(context).tr('Please enter first name')),
+                          errorText:('Please enter first name').tr()),
                     ],
                   ),
                   Padding(
@@ -151,10 +151,10 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "last_name",
                     initialValue:'$last_name',
                     decoration:
-                        InputDecoration(labelText: AppLocalizations.of(context).tr('Last name')),
+                        InputDecoration(labelText: ('Last name').tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:AppLocalizations.of(context).tr('Please enter last name')),
+                          errorText:('Please enter last name').tr()),
                     ],
                   ),
                   Padding(
@@ -164,7 +164,7 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "email",
                     initialValue:'$email',
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('Email')),
+                    decoration: InputDecoration(labelText:('Email').tr()),
                     validators: [
                       FormBuilderValidators.max(255),
                     ],
@@ -176,10 +176,10 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "phone",
                     initialValue:'$phone',
                     keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(labelText:  AppLocalizations.of(context).tr('Phone number')),
+                    decoration: InputDecoration(labelText:('Phone number').tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:AppLocalizations.of(context).tr('Please enter phone number')),
+                          errorText:('Please enter phone number').tr()),
                     ],
                   ),
                   Padding(
@@ -190,10 +190,10 @@ class _ModelProfileState extends State<ModelProfile> {
                     attribute: "username",
                     initialValue:'$username',
                     decoration:
-                        InputDecoration(labelText: AppLocalizations.of(context).tr("Username")),
+                        InputDecoration(labelText:("Username").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:AppLocalizations.of(context).tr("Please enter username")),
+                          errorText:("Please enter username").tr()),
                     ],
                   ),
                   Padding(
@@ -204,14 +204,12 @@ class _ModelProfileState extends State<ModelProfile> {
                     initialValue:'$password',
                     obscureText: true,
                     decoration:
-                        InputDecoration(labelText: AppLocalizations.of(context).tr("Password")),
+                        InputDecoration(labelText:("Password").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText:
-                              AppLocalizations.of(context).tr('Please enter password')),
+                          errorText:('Please enter password').tr()),
                       FormBuilderValidators.min(4,
-                          errorText:
-                              AppLocalizations.of(context).tr('Password must contain 4 or more digits')),
+                          errorText:('Password must contain 4 or more digits').tr()),
                     ],
                   ),
                   Padding(
@@ -222,14 +220,14 @@ class _ModelProfileState extends State<ModelProfile> {
                     initialValue:'$password',
                     obscureText: true,
                     decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).tr("Password confirm")),
+                        labelText:("Password confirm").tr()),
                     validators: [
                       FormBuilderValidators.required(),
                       (val) {
                         if (_fbKey.currentState.fields['password'].currentState
                                 .value !=
                             val) {
-                          return AppLocalizations.of(context).tr("Password confirm is incorect");
+                          return ("Password confirm is incorect").tr();
                         }
                       }
                     ],
@@ -249,8 +247,7 @@ class _ModelProfileState extends State<ModelProfile> {
                                   Icons.save,
                                   color: Colors.white,
                                 ),
-                                label: Text(
-                                  AppLocalizations.of(context).tr("Submit"),
+                                label: Text(("Submit").tr(),
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 key: null,

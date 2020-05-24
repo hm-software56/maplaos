@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization_delegate.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:maplaos/model/add_location.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
@@ -64,17 +64,17 @@ class _ModelLocationViewState extends State<ModelLocationView> {
         context: context,
         builder: (Builder) {
           String name = locationlist['status'].toString() == 'Open'
-              ? AppLocalizations.of(context).tr('Public')
-              : AppLocalizations.of(context).tr('Pedding');
+              ? ('Public').tr()
+              : ('Pedding').tr();
           String pro_name = Localizations.localeOf(context).languageCode == "en"
-              ? AppLocalizations.of(context).tr('Province: ') +
+              ? ('Province: ').tr() +
                   locationlist['pro_name'].toString()
-              : AppLocalizations.of(context).tr('Province: ') +
+              : ('Province: ').tr() +
                   locationlist['pro_name_la'].toString();
           String dis_name = Localizations.localeOf(context).languageCode == "en"
-              ? AppLocalizations.of(context).tr('District: ') +
+              ? ('District: ').tr() +
                   locationlist['dis_name'].toString()
-              : AppLocalizations.of(context).tr('District: ') +
+              : ('District: ').tr() +
                   locationlist['dis_name_la'].toString();
           return SingleChildScrollView(
             child: Container(
@@ -91,8 +91,7 @@ class _ModelLocationViewState extends State<ModelLocationView> {
                       padding: EdgeInsets.all(10),
                       //color: Colors.red,
                       child: Center(
-                        child: Text(
-                          AppLocalizations.of(context).tr('Details'),
+                        child: Text(('Details').tr(),
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),
@@ -122,21 +121,17 @@ class _ModelLocationViewState extends State<ModelLocationView> {
                                   dis_name,
                                   style: TextStyle(fontSize: 11.0),
                                 ),
-                                Text(
-                                  AppLocalizations.of(context).tr('Latitude') +
+                                Text(('Latitude').tr() +
                                       ": " +
                                       locationlist['latitude'].toString(),
                                   style: TextStyle(fontSize: 11.0),
                                 ),
-                                Text(
-                                  AppLocalizations.of(context)
-                                          .tr('Longtitude') +
+                                Text(('Longtitude').tr() +
                                       ": " +
                                       locationlist['longitude'].toString(),
                                   style: TextStyle(fontSize: 11.0),
                                 ),
-                                Text(
-                                  AppLocalizations.of(context).tr('Status') +
+                                Text(('Status').tr() +
                                       ": $name",
                                   style: TextStyle(
                                       fontSize: 10.0,

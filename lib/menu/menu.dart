@@ -13,7 +13,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:easy_localization/easy_localization.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 class Menu extends StatefulWidget {
   @override
   _MenuState createState() => _MenuState();
@@ -109,15 +109,30 @@ class _MenuState extends State<Menu> {
       /*============ Drop Images =================*/
       File croppedFile = await ImageCropper.cropImage(
           sourcePath: imageFile.path,
-          ratioX: 1.0,
-          ratioY: 1.0,
-          toolbarTitle: 'Crop photo',
-          toolbarColor: Colors.red);
+         aspectRatioPresets:[
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ],
+              androidUiSettings: AndroidUiSettings(
+                toolbarTitle: 'Cropper',
+                toolbarColor: Colors.deepOrange,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+              );
       if (croppedFile != null) {
         imageFile = croppedFile;
         /*============ Send Images to API Save =================*/
-        FormData formData = new FormData.from(
-            {"filepost": new UploadFileInfo(imageFile, "upload1.jpg")});
+        FormData formData = new FormData.fromMap(
+            {
+               "filepost": await MultipartFile.fromFile(imageFile.path,filename: "upload.jpg")
+               }
+        );
+        /*FormData formData = new FormData.from(
+            {"filepost": new UploadFileInfo(imageFile, "upload1.jpg")});*/
         try {
           var response = await dio.post("${setting.apiUrl}/uploadfile",
               data: formData, options: Options(method: 'POST'));
@@ -139,7 +154,7 @@ class _MenuState extends State<Menu> {
             print('Error upload image');
           }
         } on DioError catch (e) {
-          print('Errors upload');
+          print(e);
         }
       } else {
         setState(() {
@@ -182,16 +197,32 @@ class _MenuState extends State<Menu> {
       /*============ Drop Images =================*/
       File croppedFile = await ImageCropper.cropImage(
           sourcePath: imageBgFile.path,
-          ratioX: 1.8,
-          ratioY: 1.0,
-          toolbarTitle: AppLocalizations.of(context).tr('Crop photo'),
-          toolbarColor: Colors.red);
+          aspectRatioPresets:[
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ],
+              androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+              );
       if (croppedFile != null) {
         imageBgFile = croppedFile;
         /*============ Send Images to API Save =================*/
         Dio dio = new Dio();
-        FormData formData = new FormData.from(
-            {"filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")});
+        FormData formData = new FormData.fromMap(
+            {
+              "filepost": await MultipartFile.fromFile(imageBgFile.path,filename: "upload.jpg")
+             // "filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")
+              }
+        );
+        /*FormData formData = new FormData.from(
+            {"filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")});*/
         try {
           var response = await dio.post("${setting.apiUrl}/uploadfile",
               data: formData, options: Options(method: 'POST'));
@@ -235,10 +266,7 @@ class _MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
-    var data = EasyLocalizationProvider.of(context).data;
-    return EasyLocalizationProvider(
-      data: data,
-      child: Drawer(
+    return  Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -251,15 +279,13 @@ class _MenuState extends State<Menu> {
                       height: 80.0,
                       child: Column(
                         children: <Widget>[
-                          Text(
-                            AppLocalizations.of(context).tr('Change Backgroud'),
+                          Text(('Change Backgroud').tr(),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Row(
                             children: <Widget>[
                               OutlineButton.icon(
-                                label: Text(
-                                    AppLocalizations.of(context).tr('GALLERY'),
+                                label: Text(('GALLERY').tr(),
                                     style: TextStyle(
                                         fontSize: 10.0, color: Colors.black)),
                                 icon: Icon(
@@ -275,8 +301,7 @@ class _MenuState extends State<Menu> {
                               Padding(
                                 padding: EdgeInsets.only(left: 10.0),
                                 child: OutlineButton.icon(
-                                  label: Text(
-                                      AppLocalizations.of(context).tr('CAMERA'),
+                                  label: Text(('CAMERA').tr(),
                                       style: TextStyle(fontSize: 10.0)),
                                   icon: Icon(
                                     Icons.camera,
@@ -311,17 +336,13 @@ class _MenuState extends State<Menu> {
                           height: 80.0,
                           child: Column(
                             children: <Widget>[
-                              Text(
-                                AppLocalizations.of(context)
-                                    .tr("Change Profile"),
+                              Text(("Change Profile").tr(),
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Row(
                                 children: <Widget>[
                                   OutlineButton.icon(
-                                    label: Text(
-                                        AppLocalizations.of(context)
-                                            .tr('GALLERY'),
+                                    label: Text(('GALLERY').tr(),
                                         style: TextStyle(
                                             fontSize: 10.0,
                                             color: Colors.black)),
@@ -338,9 +359,7 @@ class _MenuState extends State<Menu> {
                                   Padding(
                                     padding: EdgeInsets.only(left: 10.0),
                                     child: OutlineButton.icon(
-                                      label: Text(
-                                          AppLocalizations.of(context)
-                                              .tr('CAMERA'),
+                                      label: Text(('CAMERA').tr(),
                                           style: TextStyle(fontSize: 10.0)),
                                       icon: Icon(
                                         Icons.camera,
@@ -383,12 +402,10 @@ class _MenuState extends State<Menu> {
                 Icons.assessment,
                 color: Colors.red,
               ),
-              title: Text(
-                AppLocalizations.of(context).tr("How to use"),
+              title: Text(("How to use").tr(),
                 style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Text(
-                AppLocalizations.of(context).tr("How to use this app"),
+              subtitle: Text(("How to use this app").tr(),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: Icon(Icons.keyboard_arrow_right),
@@ -406,12 +423,10 @@ class _MenuState extends State<Menu> {
                 Icons.settings_applications,
                 color: Colors.red,
               ),
-              title: Text(
-                AppLocalizations.of(context).tr("About Us"),
+              title: Text(("About Us").tr(),
                 style: TextStyle(fontSize: 16.0),
               ),
-              subtitle: Text(
-                AppLocalizations.of(context).tr("Explain about us"),
+              subtitle: Text(("Explain about us").tr(),
                 style: TextStyle(fontSize: 12.0),
               ),
               trailing: Icon(Icons.keyboard_arrow_right),
@@ -429,8 +444,7 @@ class _MenuState extends State<Menu> {
                 Icons.settings,
                 color: Colors.red,
               ),
-              title: Text(
-                AppLocalizations.of(context).tr('Setting'),
+              title: Text(('Setting').tr(),
                 style: TextStyle(fontSize: 16.0),
               ),
               children: <Widget>[
@@ -439,8 +453,7 @@ class _MenuState extends State<Menu> {
                     Icons.language,
                     color: Colors.red,
                   ),
-                  title: Text(
-                    AppLocalizations.of(context).tr('Switch Language'),
+                  title: Text(('Switch Language').tr(),
                     style: TextStyle(fontSize: 12.0),
                   ),
                   subtitle: Padding(
@@ -451,7 +464,7 @@ class _MenuState extends State<Menu> {
                           child: GestureDetector(
                             onTap: () {
                               this.setState(() {
-                                data.changeLocale(Locale("lo", "LA"));
+                                context.locale = Locale('lo', 'LA'); // switch lenguage
                               });
                             },
                             child: Image.asset(
@@ -465,7 +478,7 @@ class _MenuState extends State<Menu> {
                           child: GestureDetector(
                             onTap: () {
                               this.setState(() {
-                                data.changeLocale(Locale("en", "US"));
+                                context.locale = Locale('en', 'US'); // switch lenguage
                               });
                             },
                             child: Image.asset(
@@ -487,8 +500,7 @@ class _MenuState extends State<Menu> {
                           color: Colors.red,
                         ),
                         trailing: Icon(Icons.keyboard_arrow_right),
-                        title: Text(
-                          AppLocalizations.of(context).tr("Logout"),
+                        title: Text(("Logout").tr(),
                           style: TextStyle(
                             fontSize: 16.0,
                           ),
@@ -502,7 +514,6 @@ class _MenuState extends State<Menu> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

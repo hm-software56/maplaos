@@ -14,7 +14,7 @@ class _AboutUsState extends State<AboutUs> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).tr('About Us')),
+        title: Text(('About Us').tr()),
       ),
       body: Container(
         padding: EdgeInsets.all(5.0),

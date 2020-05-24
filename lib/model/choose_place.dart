@@ -103,7 +103,7 @@ class _DragMarkerMapState extends State<DragMarkerMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).tr('Choose place')),
+        title: Text(('Choose place').tr()),
         backgroundColor: Colors.red,
       ),
       body: isgetcurrent

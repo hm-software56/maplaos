@@ -9,19 +9,15 @@ class HowUs extends StatefulWidget {
 class _HowUsState extends State<HowUs> {
   @override
   Widget build(BuildContext context) {
-    var data = EasyLocalizationProvider.of(context).data;
-    return EasyLocalizationProvider(
-      data: data,
-      child: Scaffold(
+    return  Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context).tr('How to use')),
+          title: Text(('How to use').tr()),
         ),
         body: Container(
           child: Center(
             child: Text(Localizations.localeOf(context).languageCode),
           ),
         ),
-      ),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:easy_localization/easy_localization_delegate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -305,8 +304,7 @@ class _HomeState extends State<Home> {
                                         Icons.list,
                                         color: Colors.red,
                                       ),
-                                      Text(AppLocalizations.of(context)
-                                          .tr("Details"))
+                                      Text("Details").tr()
                                     ],
                                   ),
                                 ),
@@ -338,8 +336,7 @@ class _HomeState extends State<Home> {
                                         Icons.directions,
                                         color: Colors.red,
                                       ),
-                                      Text(AppLocalizations.of(context)
-                                          .tr("Direction"))
+                                      Text("Direction").tr()
                                     ],
                                   ),
                                 ),

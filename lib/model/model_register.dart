@@ -52,9 +52,8 @@ class _ModelRegisterState extends State<ModelRegister> {
               return RichAlertDialog(
                 //uses the custom alert dialog
                 alertTitle:
-                    richTitle(AppLocalizations.of(context).tr("Successed")),
-                alertSubtitle: richSubtitle(
-                    AppLocalizations.of(context).tr("Click button below")),
+                    richTitle(("Successed").tr()),
+                alertSubtitle: richSubtitle(("Click button below").tr()),
                 alertType: RichAlertType.SUCCESS,
                 actions: <Widget>[
                   IconButton(
@@ -81,8 +80,7 @@ class _ModelRegisterState extends State<ModelRegister> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text(
-          AppLocalizations.of(context).tr("Register"),
+            child: Text(("Register").tr(),
           textAlign: TextAlign.center,
         )),
       ),
@@ -98,12 +96,10 @@ class _ModelRegisterState extends State<ModelRegister> {
                   FormBuilderTextField(
                     attribute: "first_name",
                     decoration: InputDecoration(
-                        labelText:
-                            AppLocalizations.of(context).tr("First name")),
+                        labelText:("First name").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText: AppLocalizations.of(context)
-                              .tr("Please enter first name")),
+                          errorText: ("Please enter first name").tr()),
                     ],
                   ),
                   Padding(
@@ -112,12 +108,10 @@ class _ModelRegisterState extends State<ModelRegister> {
                   FormBuilderTextField(
                     attribute: "last_name",
                     decoration: InputDecoration(
-                        labelText:
-                            AppLocalizations.of(context).tr("Last name")),
+                        labelText:("Last name").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText: AppLocalizations.of(context)
-                              .tr("Please enter last name")),
+                          errorText: ("Please enter last name").tr()),
                     ],
                   ),
                   Padding(
@@ -127,7 +121,7 @@ class _ModelRegisterState extends State<ModelRegister> {
                     attribute: "email",
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).tr("Email")),
+                        labelText:("Email").tr()),
                     validators: [
                       FormBuilderValidators.max(255),
                     ],
@@ -139,12 +133,10 @@ class _ModelRegisterState extends State<ModelRegister> {
                     attribute: "phone",
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
-                        labelText:
-                            AppLocalizations.of(context).tr("Phone number")),
+                        labelText:("Phone number").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText: AppLocalizations.of(context)
-                              .tr("Please enter phone number")),
+                          errorText: ("Please enter phone number").tr()),
                     ],
                   ),
                   Padding(
@@ -154,11 +146,10 @@ class _ModelRegisterState extends State<ModelRegister> {
                   FormBuilderTextField(
                     attribute: "username",
                     decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).tr("Username")),
+                        labelText: ("Username").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText: AppLocalizations.of(context)
-                              .tr("Please enter username")),
+                          errorText:("Please enter username").tr()),
                     ],
                   ),
                   Padding(
@@ -168,14 +159,12 @@ class _ModelRegisterState extends State<ModelRegister> {
                     attribute: "password",
                     obscureText: true,
                     decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).tr("Password")),
+                        labelText:("Password").tr()),
                     validators: [
                       FormBuilderValidators.required(
-                          errorText: AppLocalizations.of(context).tr(
-                              "Please enter password")),
+                          errorText:("Please enter password").tr()),
                       FormBuilderValidators.min(4,
-                          errorText:
-                             AppLocalizations.of(context).tr("Password must contain 4 or more digits")),
+                          errorText:("Password must contain 4 or more digits").tr()),
                     ],
                   ),
                   Padding(
@@ -185,14 +174,14 @@ class _ModelRegisterState extends State<ModelRegister> {
                     attribute: "password_confirm",
                     obscureText: true,
                     decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context).tr("Password confirm")),
+                        labelText:("Password confirm").tr()),
                     validators: [
                       FormBuilderValidators.required(),
                       (val) {
                         if (_fbKey.currentState.fields['password'].currentState
                                 .value !=
                             val) {
-                          return AppLocalizations.of(context).tr("Password confirm is incorect");
+                          return ("Password confirm is incorect").tr();
                         }
                       }
                     ],
@@ -212,8 +201,7 @@ class _ModelRegisterState extends State<ModelRegister> {
                                   Icons.save,
                                   color: Colors.white,
                                 ),
-                                label: Text(
-                                  AppLocalizations.of(context).tr("Submit"),
+                                label: Text(("Submit").tr(),
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 key: null,

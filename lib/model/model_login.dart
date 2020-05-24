@@ -72,9 +72,9 @@ class _ModelLoginState extends State<ModelLogin> {
                   ));*/
             }),
         title: Center(
-            child: Text(AppLocalizations.of(context).tr("Login"),
+            child: Text("Login",
           textAlign: TextAlign.center,
-        )),
+        ).tr()),
       ),
       body: ListView(
         reverse: false,
@@ -94,7 +94,7 @@ class _ModelLoginState extends State<ModelLogin> {
                         FormBuilderTextField(
                           attribute: "username",
                           decoration:
-                              InputDecoration(labelText:AppLocalizations.of(context).tr("Username")),
+                              InputDecoration(labelText:("Username").tr()),
                           validators: [
                             FormBuilderValidators.required(),
                           ],
@@ -107,7 +107,7 @@ class _ModelLoginState extends State<ModelLogin> {
                           maxLines: 1,
                           attribute: "password",
                           decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context).tr("Password")),
+                              labelText:("Password").tr()),
                           validators: [
                             FormBuilderValidators.required(),
                           ],
@@ -122,7 +122,7 @@ class _ModelLoginState extends State<ModelLogin> {
                       ? Padding(
                           padding: EdgeInsets.all(5),
                         )
-                      : isloading ? Text('') : Text(AppLocalizations.of(context).tr(error).toString(),style:TextStyle(fontSize: 11,color: Colors.red),),
+                      : isloading ? Text('') : Text((error).tr().toString(),style:TextStyle(fontSize: 11,color: Colors.red),),
                   Padding(
                     padding: EdgeInsets.all(5),
                   ),
@@ -138,9 +138,9 @@ class _ModelLoginState extends State<ModelLogin> {
                                   Icons.lock_open,
                                   color: Colors.white,
                                 ),
-                                label: Text(AppLocalizations.of(context).tr("Login"),
+                                label: Text("Login",
                                   style: TextStyle(color: Colors.white),
-                                ),
+                                ).tr(),
                                 key: null,
                                 onPressed: () {
                                   if (_fbKey.currentState.saveAndValidate()) {
@@ -162,11 +162,11 @@ class _ModelLoginState extends State<ModelLogin> {
                           ),
                           title: Align(
                               alignment: Alignment(-2, 0),
-                              child: new Text(AppLocalizations.of(context).tr("Register"),
+                              child: new Text("Register",
                                 style: TextStyle(
                                   color: Colors.black54,
                                 ),
-                              )),
+                              ).tr()),
                           onTap: () {
                             Navigator.push(
                                 context,
@@ -180,12 +180,12 @@ class _ModelLoginState extends State<ModelLogin> {
                         child: ListTile(
                           title: Align(
                               alignment: Alignment(1, 0),
-                              child: new Text(AppLocalizations.of(context).tr("Forget password"),
+                              child: new Text("Forget password",
                                 textAlign: TextAlign.right,
                                 style: TextStyle(
                                   color: Colors.black54,
                                 ),
-                              )),
+                              ).tr()),
                           trailing: Icon(
                             Icons.error_outline,
                             color: Colors.red,

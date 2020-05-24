@@ -180,16 +180,31 @@ class _AddLocationState extends State<AddLocation> {
       /*============ Drop Images =================*/
       File croppedFile = await ImageCropper.cropImage(
           sourcePath: imageBgFile.path,
-          ratioX: 1.0,
-          ratioY: 1.0,
-          toolbarTitle: AppLocalizations.of(context).tr('Crop photo'),
-          toolbarColor: Colors.red);
+          aspectRatioPresets:[
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ],
+              androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+              );
       if (croppedFile != null) {
         imageBgFile = croppedFile;
         /*============ Send Images to API Save =================*/
         Dio dio = new Dio();
-        FormData formData = new FormData.from(
-            {"filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")});
+        FormData formData = new FormData.fromMap(
+            {
+              "filepost": await MultipartFile.fromFile(imageBgFile.path,filename: "upload.txt")
+             // "filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")
+              }
+        );
+        
         try {
           var response = await dio.post("${setting.apiUrl}/uploadfile",
               data: formData, options: Options(method: 'POST'));
@@ -272,8 +287,7 @@ class _AddLocationState extends State<AddLocation> {
                   color: Colors.red,
                 ),
                 title: Text(
-                  AppLocalizations.of(context)
-                      .tr("This location has already exist!"),
+                  ("This location has already exist!").tr(),
                   style: TextStyle(fontSize: 16.0, color: Colors.red),
                 ),
               ),
@@ -397,8 +411,7 @@ class _AddLocationState extends State<AddLocation> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text(
-          AppLocalizations.of(context).tr("Add location tour"),
+            child: Text(("Add location tour").tr(),
           textAlign: TextAlign.center,
         )),
       ),
@@ -418,12 +431,10 @@ class _AddLocationState extends State<AddLocation> {
                           FormBuilderDropdown(
                             initialValue: province_name,
                             attribute: "province_name",
-                            decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .tr('Province')),
+                            decoration:
+                                InputDecoration(labelText: ('Province').tr()),
                             // initialValue: 'Male',
-                            hint: Text(AppLocalizations.of(context)
-                                .tr('=== Select Province ===')),
+                            hint: Text(('=== Select Province ===').tr()),
                             validators: [FormBuilderValidators.required()],
                             items: listprovinces
                                 .map((province) => DropdownMenuItem(
@@ -440,12 +451,10 @@ class _AddLocationState extends State<AddLocation> {
                           FormBuilderDropdown(
                             initialValue: district_name,
                             attribute: "district_name",
-                            decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .tr('District')),
+                            decoration:
+                                InputDecoration(labelText: ('District').tr()),
                             // initialValue: 'Male',
-                            hint: Text(AppLocalizations.of(context)
-                                .tr('=== Select district ===')),
+                            hint: Text(('=== Select district ===').tr()),
                             validators: [FormBuilderValidators.required()],
                             items: listdistricts
                                 .map((district) => DropdownMenuItem(
@@ -463,8 +472,7 @@ class _AddLocationState extends State<AddLocation> {
                             initialValue: loc_name_la,
                             attribute: "loc_name_la",
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .tr('Localition name lao')),
+                                labelText:('Localition name lao').tr()),
                             validators: [
                               FormBuilderValidators.required(),
                             ],
@@ -476,8 +484,7 @@ class _AddLocationState extends State<AddLocation> {
                             initialValue: loc_name,
                             attribute: "loc_name",
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .tr('Localition name english')),
+                                labelText: ('Localition name english').tr()),
                             validators: [
                               FormBuilderValidators.required(),
                             ],
@@ -491,8 +498,7 @@ class _AddLocationState extends State<AddLocation> {
                                 enabled: false,
                                 attribute: "latitude",
                                 decoration: InputDecoration(
-                                    labelText: AppLocalizations.of(context)
-                                        .tr('Latitude')),
+                                    labelText:('Latitude').tr()),
                                 initialValue: latitudecurrent != null
                                     ? '$latitudecurrent'
                                     : '',
@@ -510,8 +516,7 @@ class _AddLocationState extends State<AddLocation> {
                                     ? '$longtitudecurrent'
                                     : '',
                                 decoration: InputDecoration(
-                                    labelText: AppLocalizations.of(context)
-                                        .tr('Longtitude')),
+                                    labelText: ('Longtitude').tr()),
                                 validators: [
                                   FormBuilderValidators.required(),
                                 ],
@@ -524,13 +529,14 @@ class _AddLocationState extends State<AddLocation> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  DragMarkerMap(latitudecurrent,
-                                                      longtitudecurrent, locationId),
+                                                  DragMarkerMap(
+                                                      latitudecurrent,
+                                                      longtitudecurrent,
+                                                      locationId),
                                               fullscreenDialog: true));
                                     },
                                     icon: Icon(Icons.map),
-                                    label: Text(AppLocalizations.of(context)
-                                        .tr('Click change location'))),
+                                    label: Text(('Click change location').tr())),
                                 /*child: InkWell(
                                     child: new Text(AppLocalizations.of(context)
                                         .tr('Click change location')),
@@ -552,8 +558,7 @@ class _AddLocationState extends State<AddLocation> {
                             attribute: "detail_la",
                             maxLines: 3,
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .tr('Details Lao')),
+                                labelText: ('Details Lao').tr()),
                           ),
                           Padding(
                             padding: EdgeInsets.all(10),
@@ -563,8 +568,7 @@ class _AddLocationState extends State<AddLocation> {
                             attribute: "detail_en",
                             maxLines: 3,
                             decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .tr('Details English')),
+                                labelText: ('Details English').tr()),
                           ),
                           Padding(
                             padding: EdgeInsets.all(10),
@@ -655,14 +659,13 @@ class _AddLocationState extends State<AddLocation> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            AppLocalizations.of(context).tr('Upload Photo'),
+                            ('Upload Photo').tr(),
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Row(
                             children: <Widget>[
                               OutlineButton.icon(
-                                label: Text(
-                                    AppLocalizations.of(context).tr('GALLERY'),
+                                label: Text(('GALLERY').tr(),
                                     style: TextStyle(
                                         fontSize: 10.0, color: Colors.black)),
                                 icon: Icon(
@@ -679,8 +682,7 @@ class _AddLocationState extends State<AddLocation> {
                               Padding(
                                 padding: EdgeInsets.only(left: 10.0),
                                 child: OutlineButton.icon(
-                                  label: Text(
-                                      AppLocalizations.of(context).tr('CAMERA'),
+                                  label: Text(('CAMERA').tr(),
                                       style: TextStyle(fontSize: 10.0)),
                                   icon: Icon(
                                     Icons.camera,

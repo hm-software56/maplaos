@@ -7,7 +7,7 @@ from models.user import User
 from models.location import Location
 from models.pushnotification import Pushnotification
 
-UPLOAD_FOLDER = '/home/cbr/daxiong/api/images/'  # path uploading use in server
+UPLOAD_FOLDER = '/home/cbr/python/api/images/'  # path uploading use in server
 # UPLOAD_FOLDER = '/images/' # path uploading use in server
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

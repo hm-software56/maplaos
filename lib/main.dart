@@ -5,35 +5,29 @@ import 'package:maplaos/homescreen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-void main() => runApp(EasyLocalization(child: MyApp()));
+void main() => runApp(EasyLocalization(
+      supportedLocales: [Locale('lo', 'LA'), Locale('en', 'US')],
+      path: 'resources/langs', // <-- change patch to your
+      fallbackLocale: Locale('lo', 'LA'),
+      child: MyApp()
+    ),
+);
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var data = EasyLocalizationProvider.of(context).data;
-    return EasyLocalizationProvider(
-      data: data,
-      child: MaterialApp(
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          //app-specific localization
-          EasylocaLizationDelegate(
-              locale: data.locale, path: 'resources/langs'),
-        ],
-        supportedLocales: [Locale('en', 'US'), Locale('lo', 'LA')],
-        locale: data.savedLocale,
-        debugShowCheckedModeBanner: false,
+    //context.locale = Locale('lo', 'LA'); //selected lenguage
+    return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      debugShowCheckedModeBanner: false,
         title: 'Maplaos',
         theme: ThemeData(
           primarySwatch: Colors.red,
         ),
-        routes: <String, WidgetBuilder>{
-          '/home': (BuildContext context) => Home()
-        },
-        home: HomeScreen(),
-      ),
+      home: HomeScreen()
     );
   }
 }

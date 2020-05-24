@@ -1,6 +1,6 @@
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:easy_localization/easy_localization_delegate.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:maplaos/model/add_location.dart';
 import 'package:maplaos/model/alert.dart';
@@ -178,7 +178,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
             ? buildSearchField(context)
             : keyword != ""
                 ? Text(keyword)
-                : Text(AppLocalizations.of(context).tr('List location')),
+                : Text(('List location').tr()),
         actions: <Widget>[
           new IconButton(
             icon: new Icon(Icons.search),
@@ -199,8 +199,8 @@ class _ModelListLocationState extends State<ModelListLocation> {
                 itemBuilder: (context, index) {
                   String statusname =
                       listlocation[index]['status'].toString() == 'Open'
-                          ? AppLocalizations.of(context).tr('Public')
-                          : AppLocalizations.of(context).tr('Pedding');
+                          ? ('Public').tr()
+                          : ('Pedding').tr();
                   final item = listlocation[index]['id'].toString();
 
                   String provincename =
@@ -251,31 +251,27 @@ class _ModelListLocationState extends State<ModelListLocation> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              AppLocalizations.of(context).tr('Province') +
+                              ('Province').tr() +
                                   ": " +
                                   "$provincename",
                               style: TextStyle(fontSize: 11.0),
                             ),
-                            Text(
-                              AppLocalizations.of(context).tr('District') +
+                            Text(('District').tr() +
                                   ": " +
                                   "$districtname",
                               style: TextStyle(fontSize: 11.0),
                             ),
-                            Text(
-                              AppLocalizations.of(context).tr('Latitude') +
+                            Text(('Latitude').tr() +
                                   ": " +
                                   listlocation[index]['latitude'].toString(),
                               style: TextStyle(fontSize: 11.0),
                             ),
-                            Text(
-                              AppLocalizations.of(context).tr('Longtitude') +
+                            Text(('Longtitude').tr() +
                                   ": " +
                                   listlocation[index]['longitude'].toString(),
                               style: TextStyle(fontSize: 11.0),
                             ),
-                            Text(
-                              AppLocalizations.of(context).tr('Status') +
+                            Text(('Status').tr() +
                                   ": $statusname",
                               style: TextStyle(
                                   fontSize: 11.0,
