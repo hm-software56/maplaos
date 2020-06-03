@@ -11,7 +11,7 @@ class Setting {
   */
   var host = hosturl;
   var user = 'root';
-  var password = 'Da123!@#';
+  var password = 'root';
   var db = 'maplaos_db';
   int port = 3306;
 
