@@ -64,7 +64,9 @@ class _MenuState extends State<Menu> {
         userID = userId;
         islogin = true;
       });
+      await conn.close();
     }
+    
   }
 
   void logout() async {
@@ -165,6 +167,7 @@ class _MenuState extends State<Menu> {
         });
       }
     }
+    await conn.close();
   }
 
 /*====================== Uplaod image profile Bg ========================*/
@@ -255,6 +258,7 @@ class _MenuState extends State<Menu> {
         });
       }
     }
+    await conn.close();
   }
 
   @override

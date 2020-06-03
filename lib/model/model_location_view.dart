@@ -39,6 +39,7 @@ class _ModelLocationViewState extends State<ModelLocationView> {
         isloading = false;
       });
     }
+    await conn.close();
     print(locationlist['latitude']);
   }
 
@@ -67,15 +68,11 @@ class _ModelLocationViewState extends State<ModelLocationView> {
               ? ('Public').tr()
               : ('Pedding').tr();
           String pro_name = Localizations.localeOf(context).languageCode == "en"
-              ? ('Province: ').tr() +
-                  locationlist['pro_name'].toString()
-              : ('Province: ').tr() +
-                  locationlist['pro_name_la'].toString();
+              ? ('Province: ').tr() + locationlist['pro_name'].toString()
+              : ('Province: ').tr() + locationlist['pro_name_la'].toString();
           String dis_name = Localizations.localeOf(context).languageCode == "en"
-              ? ('District: ').tr() +
-                  locationlist['dis_name'].toString()
-              : ('District: ').tr() +
-                  locationlist['dis_name_la'].toString();
+              ? ('District: ').tr() + locationlist['dis_name'].toString()
+              : ('District: ').tr() + locationlist['dis_name_la'].toString();
           return SingleChildScrollView(
             child: Container(
               color: Colors.transparent,
@@ -91,7 +88,8 @@ class _ModelLocationViewState extends State<ModelLocationView> {
                       padding: EdgeInsets.all(10),
                       //color: Colors.red,
                       child: Center(
-                        child: Text(('Details').tr(),
+                        child: Text(
+                          ('Details').tr(),
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),
@@ -121,18 +119,20 @@ class _ModelLocationViewState extends State<ModelLocationView> {
                                   dis_name,
                                   style: TextStyle(fontSize: 11.0),
                                 ),
-                                Text(('Latitude').tr() +
+                                Text(
+                                  ('Latitude').tr() +
                                       ": " +
                                       locationlist['latitude'].toString(),
                                   style: TextStyle(fontSize: 11.0),
                                 ),
-                                Text(('Longtitude').tr() +
+                                Text(
+                                  ('Longtitude').tr() +
                                       ": " +
                                       locationlist['longitude'].toString(),
                                   style: TextStyle(fontSize: 11.0),
                                 ),
-                                Text(('Status').tr() +
-                                      ": $name",
+                                Text(
+                                  ('Status').tr() + ": $name",
                                   style: TextStyle(
                                       fontSize: 10.0,
                                       color:

@@ -32,5 +32,6 @@ class CheckLocationNear{
     //print(km);
     print(meter);
     //return meter;
+  await conn.close();
 }
 }

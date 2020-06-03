@@ -63,9 +63,9 @@ class _ModelRegisterState extends State<ModelRegister> {
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      /*Navigator.pushReplacement(context, MaterialPageRoute(
+                      Navigator.pushReplacement(context, MaterialPageRoute(
                                   builder: (context) => ModelLogin(),
-                                ));*/
+                                ));
                     },
                   )
                 ],
@@ -73,6 +73,7 @@ class _ModelRegisterState extends State<ModelRegister> {
             });
       }
     }
+    await conn.close();
   }
 
   @override

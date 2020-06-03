@@ -49,6 +49,7 @@ class _ModelProfileState extends State<ModelProfile> {
         user_id=userId;
       });
     }
+    await conn.close();
   }
 
   void editprofile() async {
@@ -109,7 +110,7 @@ class _ModelProfileState extends State<ModelProfile> {
                 ],
               );
             });
-    
+    await conn.close();
   }
 @override
   void initState() {

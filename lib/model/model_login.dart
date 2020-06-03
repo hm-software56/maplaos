@@ -56,6 +56,7 @@ class _ModelLoginState extends State<ModelLogin> {
         isloading = false;
       });
     }
+    await conn.close();
   }
 
   Widget build(BuildContext context) {

@@ -33,6 +33,7 @@ class _ViewDetailsLocationState extends State<ViewDetailsLocation> {
         isloading = false;
       });
     }
+    await conn.close();
   }
 
   @override

@@ -222,6 +222,7 @@ class _HomeState extends State<Home> {
       polylines = polylines;
       setting.zoom = 8;
     });
+    await conn.close();
   }
 
   void savetracingvisitor(var data) async {
@@ -236,6 +237,7 @@ class _HomeState extends State<Home> {
     var save = await conn.query(
         'insert into tracking_visitor (date, location_id,device_id) values (?, ?,?)',
         [now.toString(), data['id'], deviceid]);
+    await conn.close();
   }
 
   /*=============== get detail onclick marker  ===============*/
@@ -392,6 +394,7 @@ class _HomeState extends State<Home> {
         list_autocomplete = name.split(";");
       });
     }
+    await conn.close();
   }
 
   void _startSearch() {

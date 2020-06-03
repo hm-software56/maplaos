@@ -43,6 +43,7 @@ class _LocationimgState extends State<Locationimg> {
         isloading = false;
       });
     }
+    await conn.close();
   }
 
   @override

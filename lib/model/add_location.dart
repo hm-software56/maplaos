@@ -94,8 +94,10 @@ class _AddLocationState extends State<AddLocation> {
         districtMap = districtMap;
         listphoto = listphoto;
       });
+      await conn.close(); 
     }
     listProvince();
+    
   }
 
   void listProvince() async {
@@ -115,7 +117,7 @@ class _AddLocationState extends State<AddLocation> {
         provincesMap[province['pro_name_la']] = province['id'];
       }
     }
-    conn.close();
+    await conn.close();
     setState(() {
       isloading = false;
     });
@@ -140,7 +142,7 @@ class _AddLocationState extends State<AddLocation> {
         districtMap[district['dis_name_la']] = district['id'];
       }
     }
-    conn.close();
+    await conn.close();
     setState(() {
       listdistricts = listdistricts;
       districtMap = districtMap;
@@ -226,6 +228,7 @@ class _AddLocationState extends State<AddLocation> {
         });
       }
     }
+    await conn.close();
   }
 
   double latitudecurrent;
@@ -338,6 +341,7 @@ class _AddLocationState extends State<AddLocation> {
       isloadingsave = false;
     });
     await Dio().get('${setting.apiUrl}/textsearch');
+    await conn.close();
   }
 
   void updatelocation() async {
@@ -385,6 +389,7 @@ class _AddLocationState extends State<AddLocation> {
           [data['detail_en'], data['detail_la'], locationId]);
     }
     await Dio().get('${setting.apiUrl}/textsearch');
+    await conn.close();
     Navigator.of(context).pop();
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (_) => ModelLocationView(locationId)));

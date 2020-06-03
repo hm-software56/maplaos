@@ -50,7 +50,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
 
       listlocation.add(location);
     }
-    conn.close();
+    await conn.close();
     setState(() {
       isloading = false;
       listlocation = listlocation;
@@ -67,7 +67,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
         timeout: Duration(seconds: 5)));
     var locationdele =
         await conn.query('delete from location where id=?', [id]);
-    conn.close();
+    await conn.close();
   }
 
   Future<void> refresh() {
@@ -131,7 +131,7 @@ class _ModelListLocationState extends State<ModelListLocation> {
         isloading = false;
         listlocation = listlocation;
       });
-      conn.close();
+      await conn.close();
     } else {
       setState(() {
         is_searching = true;

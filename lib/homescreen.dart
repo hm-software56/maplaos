@@ -68,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           password: setting.password,
           db: setting.db,
           timeout: Duration(seconds: 3)));
+          await conn.close();
     } on Exception {
       setState(() {
         connected = false;
@@ -187,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
             deviceid,
             now.toString()
           ]);
-      conn.close();
+      await conn.close();
       print('every three minutes daxiong');
     });
     //checkGPS();
