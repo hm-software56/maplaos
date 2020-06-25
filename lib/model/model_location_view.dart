@@ -7,6 +7,7 @@ import 'package:mysql1/mysql1.dart' as mysql;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:maplaos/model/loadimg.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class ModelLocationView extends StatefulWidget {
   @override

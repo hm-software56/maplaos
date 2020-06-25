@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:maplaos/menu/menu_login.dart';
@@ -119,7 +118,7 @@ class _MenuState extends State<Menu> {
                 CropAspectRatioPreset.ratio16x9
               ],
               androidUiSettings: AndroidUiSettings(
-                toolbarTitle: 'Cropper',
+                toolbarTitle: ('Crop Photo').tr(),
                 toolbarColor: Colors.deepOrange,
                 toolbarWidgetColor: Colors.white,
                 initAspectRatio: CropAspectRatioPreset.original,
@@ -127,6 +126,7 @@ class _MenuState extends State<Menu> {
               );
       if (croppedFile != null) {
         imageFile = croppedFile;
+      
         /*============ Send Images to API Save =================*/
         FormData formData = new FormData.fromMap(
             {
@@ -147,10 +147,10 @@ class _MenuState extends State<Menu> {
             }
             var results = await conn.query(
                 'UPDATE profile SET photo =? where id = ?',
-                [response.data.toString(), profile_id]);
+                [response.data, profile_id]);
             setState(() {
               isloadimg = false;
-              photo_profile = response.data;
+              photo_profile =  response.data;
             });
           } else {
             print('Error upload image');
@@ -208,7 +208,7 @@ class _MenuState extends State<Menu> {
                 CropAspectRatioPreset.ratio16x9
               ],
               androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Cropper',
+            toolbarTitle: ('Crop Photo').tr(),
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
@@ -385,6 +385,7 @@ class _MenuState extends State<Menu> {
                   child: CircleAvatar(
                     backgroundImage: photo_profile == null
                         ? AssetImage('assets/user.png')
+                        //:Image.memory(photo_profile)
                         : NetworkImage(
                             '${setting.apiUrl}/showimg/${photo_profile}'),
                   )),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:html_editor/html_editor.dart';
 import 'package:latlong/latlong.dart';
 import 'package:maplaos/model/alert.dart';
 import 'package:maplaos/model/check_location_near.dart';
@@ -30,6 +31,8 @@ class _AddLocationState extends State<AddLocation> {
   _AddLocationState(this.locationId);
   CheckLocationNear locationNear = CheckLocationNear();
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+  GlobalKey<HtmlEditorState> keyEditorLa = GlobalKey();
+  GlobalKey<HtmlEditorState> keyEditorEn = GlobalKey();
   Setting setting = Setting();
   bool isloading = true;
   List listprovinces = List();
@@ -43,6 +46,7 @@ class _AddLocationState extends State<AddLocation> {
   var detail_la;
   var detail_en;
   var pro_id;
+
   void locationData(locationId) async {
     if (locationId != null) {
       final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
@@ -52,7 +56,7 @@ class _AddLocationState extends State<AddLocation> {
           password: setting.password,
           db: setting.db));
       var locations = await conn.query(
-          'select location.*, pro_name,pro_name_la,dis_name,dis_name_la from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?',
+          'select  location.*, location_details.*, pro_name,pro_name_la,dis_name,dis_name_la from location left join provinces on provinces.id=location.provinces_id left join districts on districts.id=location.districts_id left join location_details on location_details.location_id=location.id where location.id=?',
           [locationId]);
       for (var location in locations) {
         setState(() {
@@ -67,12 +71,14 @@ class _AddLocationState extends State<AddLocation> {
           loc_name_la = location['loc_name_la'];
           latitudecurrent = location['latitude'];
           longtitudecurrent = location['longitude'];
-          detail_la = location['deltails_la'];
-          detail_en = location['deltails_en'];
+          detail_la = location['details_la'];
+          detail_en = location['details_en'];
           pro_id = location['provinces_id'];
           print(location['deltails_la']);
+          print('daxiong123');
         });
       }
+
       var districts = await conn
           .query('select * from districts where provinces_id=?', [pro_id]);
       for (var district in districts) {
@@ -94,10 +100,9 @@ class _AddLocationState extends State<AddLocation> {
         districtMap = districtMap;
         listphoto = listphoto;
       });
-      await conn.close(); 
+      await conn.close();
     }
     listProvince();
-    
   }
 
   void listProvince() async {
@@ -181,32 +186,31 @@ class _AddLocationState extends State<AddLocation> {
       });
       /*============ Drop Images =================*/
       File croppedFile = await ImageCropper.cropImage(
-          sourcePath: imageBgFile.path,
-          aspectRatioPresets:[
-                CropAspectRatioPreset.square,
-                CropAspectRatioPreset.ratio3x2,
-                CropAspectRatioPreset.original,
-                CropAspectRatioPreset.ratio4x3,
-                CropAspectRatioPreset.ratio16x9
-              ],
-              androidUiSettings: AndroidUiSettings(
+        sourcePath: imageBgFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
             toolbarTitle: 'Cropper',
             toolbarColor: Colors.deepOrange,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
-              );
+      );
       if (croppedFile != null) {
         imageBgFile = croppedFile;
         /*============ Send Images to API Save =================*/
         Dio dio = new Dio();
-        FormData formData = new FormData.fromMap(
-            {
-              "filepost": await MultipartFile.fromFile(imageBgFile.path,filename: "upload.txt")
-             // "filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")
-              }
-        );
-        
+        FormData formData = new FormData.fromMap({
+          "filepost": await MultipartFile.fromFile(imageBgFile.path,
+              filename: "upload.txt")
+          // "filepost": new UploadFileInfo(imageBgFile, "upload1.jpg")
+        });
+
         try {
           var response = await dio.post("${setting.apiUrl}/uploadfile",
               data: formData, options: Options(method: 'POST'));
@@ -302,10 +306,14 @@ class _AddLocationState extends State<AddLocation> {
     }
     if (cansave) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      longtitudecurrent = prefs.get('long');
-      latitudecurrent = prefs.get('lat');
+
+      longtitudecurrent =
+          prefs.get('long') == null ? longtitudecurrent : prefs.get('long');
+      latitudecurrent =
+          prefs.get('lat') == null ? latitudecurrent : prefs.get('lat');
       prefs.remove('lat');
       prefs.remove('long');
+
       var saveloca = await conn.query(
           'insert into location (latitude, longitude, loc_name,loc_name_la,type_location_id,provinces_id,districts_id,villages_id,user_id,status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
@@ -326,9 +334,16 @@ class _AddLocationState extends State<AddLocation> {
               'insert into photo (photo, location_id) values (?, ?)',
               [photo, saveloca.insertId]);
         }
+        /*var savedetail = await conn.query(
+            'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
+            [data['detail_en'], data['detail_la'], saveloca.insertId]);*/
         var savedetail = await conn.query(
             'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
-            [data['detail_en'], data['detail_la'], saveloca.insertId]);
+            [
+              data['detail_en'],
+              await keyEditorLa.currentState.getText(),
+              saveloca.insertId
+            ]);
       }
       Navigator.of(context).pop();
       Navigator.of(context).pop();
@@ -349,8 +364,8 @@ class _AddLocationState extends State<AddLocation> {
     var user_id = prefs.getInt('userId');
     longtitudecurrent = prefs.get('long');
     latitudecurrent = prefs.get('lat');
-    prefs.remove('lat');
-    prefs.remove('long');
+    //prefs.remove('lat');
+    //prefs.remove('long');
     bool cansave = true;
     final conn = await mysql.MySqlConnection.connect(mysql.ConnectionSettings(
         host: setting.host,
@@ -359,7 +374,8 @@ class _AddLocationState extends State<AddLocation> {
         password: setting.password,
         db: setting.db));
     var data = _fbKey.currentState.value;
-
+    print(latitudecurrent);
+    print('daxiong 123');
     var saveloca = await conn.query(
         'update  location set latitude=?, longitude=?, loc_name=?,loc_name_la=?,type_location_id=?,provinces_id=?,districts_id=?,villages_id=?,user_id=? where id=?',
         [
@@ -386,7 +402,11 @@ class _AddLocationState extends State<AddLocation> {
           'delete from location_details where location_id=?', [locationId]);
       var savedetail = await conn.query(
           'insert into location_details (details, details_la,location_id) values (?, ?, ?)',
-          [data['detail_en'], data['detail_la'], locationId]);
+          [
+            data['detail_en'],
+            await keyEditorLa.currentState.getText(),
+            locationId
+          ]);
     }
     await Dio().get('${setting.apiUrl}/textsearch');
     await conn.close();
@@ -416,7 +436,8 @@ class _AddLocationState extends State<AddLocation> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text(("Add location tour").tr(),
+            child: Text(
+          ("Add location tour").tr(),
           textAlign: TextAlign.center,
         )),
       ),
@@ -477,7 +498,7 @@ class _AddLocationState extends State<AddLocation> {
                             initialValue: loc_name_la,
                             attribute: "loc_name_la",
                             decoration: InputDecoration(
-                                labelText:('Localition name lao').tr()),
+                                labelText: ('Localition name lao').tr()),
                             validators: [
                               FormBuilderValidators.required(),
                             ],
@@ -503,7 +524,7 @@ class _AddLocationState extends State<AddLocation> {
                                 enabled: false,
                                 attribute: "latitude",
                                 decoration: InputDecoration(
-                                    labelText:('Latitude').tr()),
+                                    labelText: ('Latitude').tr()),
                                 initialValue: latitudecurrent != null
                                     ? '$latitudecurrent'
                                     : '',
@@ -541,7 +562,8 @@ class _AddLocationState extends State<AddLocation> {
                                               fullscreenDialog: true));
                                     },
                                     icon: Icon(Icons.map),
-                                    label: Text(('Click change location').tr())),
+                                    label:
+                                        Text(('Click change location').tr())),
                                 /*child: InkWell(
                                     child: new Text(AppLocalizations.of(context)
                                         .tr('Click change location')),
@@ -558,23 +580,43 @@ class _AddLocationState extends State<AddLocation> {
                               ),
                             ],
                           ),
-                          FormBuilderTextField(
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(('Details Lao').tr()),
+                          ),
+                          HtmlEditor(
+                            value:
+                                detail_la == null ? '' : detail_la.toString(),
+                            key: keyEditorLa,
+                          ),
+
+                          /*FormBuilderTextField(
                             initialValue: detail_la,
                             attribute: "detail_la",
                             maxLines: 3,
                             decoration: InputDecoration(
                                 labelText: ('Details Lao').tr()),
-                          ),
+                          ),*/
                           Padding(
                             padding: EdgeInsets.all(10),
                           ),
-                          FormBuilderTextField(
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(('Details English').tr()),
+                          ),
+                          HtmlEditor(
+                            value:
+                                detail_en == null ? '' : detail_en.toString(),
+                            key: keyEditorEn,
+                            //height: 400,
+                          ),
+                          /*FormBuilderTextField(
                             initialValue: detail_en,
                             attribute: "detail_en",
                             maxLines: 3,
                             decoration: InputDecoration(
                                 labelText: ('Details English').tr()),
-                          ),
+                          ),*/
                           Padding(
                             padding: EdgeInsets.all(10),
                           ),

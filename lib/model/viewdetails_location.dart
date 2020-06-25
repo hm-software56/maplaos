@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:maplaos/model/loadimg.dart';
 import 'package:maplaos/setting/setting.dart';
 import 'package:mysql1/mysql1.dart' as mysql;
@@ -71,7 +72,7 @@ class _ViewDetailsLocationState extends State<ViewDetailsLocation> {
                     children: <Widget>[
                       Row(
                         children: <Widget>[
-                          Flexible(child: new Text("${details}")),
+                          Flexible(child: new Html(data: details)),
                         ],
                       ),
                       Loadimg(locationlist['id']),
